@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GRAMDROP</title>
+  <style>
+    /* RESET & VARIABLES */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #050b14;
+      color: #f7fbff;
+    }
+    
+    :root {
+      --bg: #050b14;
+      --panel: #0b1524;
+      --panel2: #0f1d30;
+      --line: #1b2c42;
+      --muted: #8193aa;
+      --cyan: #28b8ff;
+      --blue: #467cff;
+      --green: #39df9a;
+    }
+
+    /* LAYOUT */
+    .app {
+      max-width: 760px;
+      margin: auto;
+      padding: 14px 14px 100px;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* HEADER & BRANDING */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 2px 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 43px;
+      height: 43px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #29c7ff, #596dff);
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      color: #04101b;
+      box-shadow: 0 8px 30px #187cff25;
+    }
+
+    .brand strong {
+      font-size: 20px;
+      letter-spacing: 0.4px;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .wallet {
+      background: #12243a;
+      border: 1px solid var(--line);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* BALANCE SECTION */
+    .balance {
+      background: linear-gradient(145deg, #0e2741, #0a1423);
+      border: 1px solid #193753;
+      border-radius: 25px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .balance:after {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      right: -80px;
+      top: -90px;
+      background: #28b8ff18;
+    }
+
+    .eyebrow {
+      color: #8da3bd;
+      font-size: 12px;
+    }
+
+    .amount {
+      font-size: 39px;
+      font-weight: 950;
+      letter-spacing: -1.4px;
+      margin: 5px 0 2px;
+    }
+
+    .amount small {
+      font-size: 15px;
+      color: var(--cyan);
+      letter-spacing: 0;
+    }
+
+    .sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .mini div {
+      background: #091524;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px;
+    }
+
+    .mini b {
+      display: block;
+      font-size: 15px;
+    }
+
+    .mini span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* CONTENT SECTIONS */
+    .content {
+      display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .section h2 {
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .section-head span {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* MINING SECTION */
+    .mine {
+      background: linear-gradient(150deg, #101f34, #0a1422);
+      border: 1px solid #1d3854;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .mine-top {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .mine-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 17px;
+      background: radial-gradient(circle, #43caff, #2862db);
+      display: grid;
+      place-items: center;
+      font-size: 27px;
+      flex-shrink: 0;
+    }
+
+    .mine-title {
+      flex: 1;
+    }
+
+    .mine-title b {
+      font-size: 16px;
+    }
+
+    .mine-title small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .mine-rate {
+      color: var(--green);
+      font-weight: 900;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .mine-number {
+      font-size: 31px;
+      font-weight: 950;
+      text-align: center;
+      margin: 18px 0 3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mine-number span {
+      font-size: 14px;
+      color: var(--cyan);
+    }
+
+    .timer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .progress {
+      height: 7px;
+      background: #142337;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 14px 0 13px;
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #28b8ff, #596dff);
+      border-radius: 99px;
+    }
+
+    .activate {
+      width: 100%;
+      background: linear-gradient(135deg, #2cc5ff, #466cff);
+      border: 0;
+      color: #03101a;
+      padding: 13px;
+      border-radius: 13px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .active-btn {
+      background: #103a31 !important;
+      color: #6df3b7 !important;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+      margin-top: 9px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 13px;
+      margin-bottom: 8px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      flex-wrap: wrap;
+    }
+
+    .ico {
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: #12263d;
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .grow {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .grow b {
+      font-size: 13px;
+    }
+
+    .grow small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    .reward {
+      color: var(--green);
+      font-weight: 900;
+      font-size: 11px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .claim {
+      background: #17324c;
+      border: 0;
+      color: #dff5ff;
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-weight: 850;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .claim.done {
+      background: #103a31;
+      color: #6df3b7;
+    }
+
+    /* EVENT CARDS */
+    .event {
+      background: linear-gradient(145deg, #121e34, #0c1524);
+      border: 1px solid #27344b;
+      border-radius: 17px;
+      padding: 13px;
+      margin-bottom: 8px;
+    }
+
+    .event .tag {
+      display: inline-block;
+      color: #07101a;
+      background: #4fd5ff;
+      padding: 4px 7px;
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .event b {
+      font-size: 15px;
+    }
+
+    .event p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 6px 0;
+    }
+
+    .event-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .event-bottom strong {
+      color: var(--green);
+    }
+
+    /* REFERRAL SECTION */
+    .refbox {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .level {
+      background: #0a1625;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .level b {
+      display: block;
+      font-size: 18px;
+    }
+
+    .level small {
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .refinput {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .refinput input {
+      flex: 1;
+      min-width: 0;
+      background: #07111d;
+      color: #dcecff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 10px;
+    }
+
+    .copy {
+      border: 0;
+      background: #fff;
+      color: #06101a;
+      border-radius: 10px;
+      padding: 0 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .milestones {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 0;
+    }
+
+    .mile {
+      background: #0b1726;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px;
+    }
+
+    .mile b {
+      font-size: 13px;
+    }
+
+    .mile small {
+      display: block;
+      color: var(--muted);
+      margin-top: 3px;
+      font-size: 10px;
+    }
+
+    .bar {
+      height: 5px;
+      background: #17263a;
+      border-radius: 99px;
+      margin-top: 9px;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #28b8ff, #596dff);
+      border-radius: 99px;
+    }
+
+    /* WITHDRAWAL SECTION */
+    .withdrawbox {
+      background: linear-gradient(145deg, #0d1e31, #0a1422);
+      border: 1px solid #203852;
+      border-radius: 19px;
+      padding: 15px;
+    }
+
+    .withdrawline {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+
+    .withdrawline span {
+      color: var(--muted);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #2bbdff, #477cff);
+      color: #03101a;
+      border: 0;
+      border-radius: 13px;
+      padding: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* BOTTOM NAVIGATION */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0b1524;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      max-width: 760px;
+      margin: 0 auto;
+      z-index: 100;
+    }
+
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.2s;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .nav-tab:hover {
+      background: rgba(40, 184, 255, 0.1);
+    }
+
+    .nav-tab.active {
+      background: rgba(40, 184, 255, 0.15);
+      color: var(--cyan);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000b;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 12px;
+      z-index: 10;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .sheet {
+      width: min(760px, 100%);
+      background: #0b1727;
+      border: 1px solid var(--line);
+      border-radius: 23px;
+      padding: 18px;
+    }
+
+    .sheet h3 {
+      margin: 0 0 14px;
+    }
+
+    .sheet input {
+      width: 100%;
+      padding: 12px;
+      background: #07111d;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: #fff;
+      margin: 6px 0 10px;
+      font-family: inherit;
+    }
+
+    .sheet-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .close {
+      background: #14263b;
+      color: #fff;
+      border: 0;
+      border-radius: 11px;
+      padding: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      .app {
+        padding: 14px 14px 110px;
+      }
+
+      .mini {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .amount {
+        font-size: 32px;
+      }
+
+      .levels {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="logo">G</div>
+        <div>
+          <strong>GRAMDROP</strong>
+          <span>Mine • Complete tasks • Earn</span>
+        </div>
+      </div>
+      <button class="wallet" id="wallet">Connect Wallet</button>
+    </header>
+
+    <!-- BALANCE HERO SECTION (Always Visible) -->
+    <section class="balance">
+      <div class="eyebrow">TOTAL GRAM BALANCE</div>
+      <div class="amount" id="balance">0.00000 <small>GRAM</small></div>
+      <div class="sub">Mining and eligible rewards are added to your balance.</div>
+
+      <div class="mini">
+        <div>
+          <b id="activeRefs">0</b>
+          <span>Active referrals</span>
+        </div>
+        <div>
+          <b id="taskDone">0</b>
+          <span>Tasks done</span>
+        </div>
+        <div>
+          <b id="minBalance">0.00000</b>
+          <span>Min withdrawal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MINING TAB -->
+    <section class="content active" id="mining-tab">
+      <div class="section-head">
+        <h2>⛏ Mining</h2>
+        <span>24 HOUR CYCLE</span>
+      </div>
+
+      <div class="mine">
+        <div class="mine-top">
+          <div class="mine-icon">⛏</div>
+          <div class="mine-title">
+            <b>GRAM Miner</b>
+            <small>Activate to become an eligible referral.</small>
+          </div>
+          <div class="mine-rate">
+            +0.0001<br>
+            GRAM / 24h
+          </div>
+        </div>
+
+        <div class="mine-number" id="mineAmount">
+          0.00000 <span>GRAM</span>
+        </div>
+
+        <div class="timer" id="timer">Miner not activated</div>
+
+        <div class="progress">
+          <i id="mineProgress"></i>
+        </div>
+
+        <button class="activate" id="activate">Activate Miner</button>
+
+        <div class="note">
+          Mining rewards are simulated in this preview. In the live bot, the backend should calculate the 24-hour cycle and prevent duplicate claims.
+        </div>
+      </div>
+    </section>
+
+    <!-- EARN TAB (Tasks) -->
+    <section class="content" id="earn-tab">
+      <div class="section-head">
+        <h2>🎯 Tasks</h2>
+        <span>COMPLETE & EARN</span>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="ico">01</div>
+          <div class="grow">
+            <b>Join GRAMDROP Channel</b>
+            <small>Join the official Telegram channel.</small>
+          </div>
+          <div class="reward">+0.001</div>
+          <button class="claim task" data-r="0.001">Claim</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="ico">02</div>
+          <div class="grow">
+            <b>Join Community</b>
+            <small>Complete the community campaign.</small>
+          </div>
+          <div class="reward">+0.001</div>
+          <button class="claim task" data-r="0.001">Claim</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="ico">03</div>
+          <div class="grow">
+            <b>Premium Campaign</b>
+            <small>Higher-value promotional task.</small>
+          </div>
+          <div class="reward">+0.002</div>
+          <button class="claim task" data-r="0.002">Claim</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="ico">04</div>
+          <div class="grow">
+            <b>Share & Refer</b>
+            <small>Share GRAMDROP with friends.</small>
+          </div>
+          <div class="reward">+0.0005</div>
+          <button class="claim task" data-r="0.0005">Claim</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS TAB -->
+    <section class="content" id="events-tab">
+      <div class="section-head">
+        <h2>🎁 Events</h2>
+        <span>LIMITED REWARDS</span>
+      </div>
+
+      <div class="card event">
+        <span class="tag">REFERRAL EVENT</span>
+        <b>Referral Milestone Rush</b>
+        <p>Activate your miner and invite active users to unlock milestone bonuses.</p>
+        <div class="event-bottom">
+          <strong>Up to +1 GRAM</strong>
+          <button class="claim" id="viewRef">View</button>
+        </div>
+      </div>
+
+      <div class="card event">
+        <span class="tag">DAILY EVENT</span>
+        <b>Daily Check-in</b>
+        <p>Return every 24 hours to claim your daily reward.</p>
+        <div class="event-bottom">
+          <strong>+0.0005 GRAM</strong>
+          <button class="claim" id="checkin">Claim</button>
+        </div>
+      </div>
+
+      <div class="card event">
+        <span class="tag">BONUS EVENT</span>
+        <b>Miner Boost</b>
+        <p>Complete 5 tasks to unlock a mining speed boost.</p>
+        <div class="event-bottom">
+          <strong>2x Mining</strong>
+          <button class="claim" id="boostBtn">Claim</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVITE TAB (Referrals) -->
+    <section class="content" id="invite-tab">
+      <div class="section-head">
+        <h2>👥 Referrals</h2>
+        <span>3 LEVELS</span>
+      </div>
+
+      <div class="refbox">
+        <div class="eyebrow">COMMISSION STRUCTURE</div>
+        <div class="levels">
+          <div class="level">
+            <b>15%</b>
+            <small>LEVEL 1</small>
+          </div>
+          <div class="level">
+            <b>5%</b>
+            <small>LEVEL 2</small>
+          </div>
+          <div class="level">
+            <b>1%</b>
+            <small>LEVEL 3</small>
+          </div>
+        </div>
+
+        <div class="refinput">
+          <input id="refLink" readonly value="https://t.me/GRAMDROP_Bot?start=123456">
+          <button class="copy" id="copy">Copy</button>
+        </div>
+
+        <div class="note">
+          A user only becomes an active referral after activating their miner. Valid referrals count toward your milestone bonuses.
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top: 16px;">
+        <h2>Milestones</h2>
+      </div>
+
+      <div class="milestones">
+        <div class="mile">
+          <b>5 active</b>
+          <small>+0.01 GRAM</small>
+          <div class="bar"><i data-t="5"></i></div>
+        </div>
+        <div class="mile">
+          <b>20 active</b>
+          <small>+0.05 GRAM</small>
+          <div class="bar"><i data-t="20"></i></div>
+        </div>
+        <div class="mile">
+          <b>50 active</b>
+          <small>+0.15 GRAM</small>
+          <div class="bar"><i data-t="50"></i></div>
+        </div>
+        <div class="mile">
+          <b>100 active</b>
+          <small>+0.40 GRAM</small>
+          <div class="bar"><i data-t="100"></i></div>
+        </div>
+        <div class="mile">
+          <b>500 active</b>
+          <small>+1.00 GRAM</small>
+          <div class="bar"><i data-t="500"></i></div>
+        </div>
+        <div class="mile">
+          <b>1000 active</b>
+          <small>+5.00 GRAM</small>
+          <div class="bar"><i data-t="1000"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WITHDRAW TAB -->
+    <section class="content" id="withdraw-tab">
+      <div class="section-head">
+        <h2>💸 Withdrawal</h2>
+        <span>TON PAYMENT</span>
+      </div>
+
+      <div class="withdrawbox">
+        <div class="withdrawline">
+          <span>Available</span>
+          <b id="wdBalance">0.00000 GRAM</b>
+        </div>
+        <div class="withdrawline">
+          <span>Minimum withdrawal</span>
+          <b>0.03 TON</b>
+        </div>
+        <div class="withdrawline">
+          <span>Payment network</span>
+          <b>TON Blockchain</b>
+        </div>
+        <div class="withdrawline">
+          <span>Exchange rate</span>
+          <b>1 GRAM = 1 TON</b>
+        </div>
+        <button class="primary" id="withdrawBtn">Request Withdrawal</button>
+        <div class="note">
+          The production version should validate the user's balance, TON wallet, withdrawal limits and payment status on the server.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="nav-bar">
+    <div class="nav-tab active" data-tab="mining-tab">
+      <div class="nav-icon">⛏</div>
+      <div>Mining</div>
+    </div>
+    <div class="nav-tab" data-tab="earn-tab">
+      <div class="nav-icon">⚡</div>
+      <div>Earn</div>
+    </div>
+    <div class="nav-tab" data-tab="events-tab">
+      <div class="nav-icon">🎁</div>
+      <div>Events</div>
+    </div>
+    <div class="nav-tab" data-tab="invite-tab">
+      <div class="nav-icon">👥</div>
+      <div>Invite</div>
+    </div>
+    <div class="nav-tab" data-tab="withdraw-tab">
+      <div class="nav-icon">↗</div>
+      <div>Withdraw</div>
+    </div>
+  </div>
+
+  <!-- WITHDRAWAL MODAL -->
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <h3>Request TON Withdrawal</h3>
+
+      <div class="eyebrow">TON WALLET ADDRESS</div>
+      <input id="address" placeholder="Enter TON wallet address">
+
+      <div class="eyebrow">AMOUNT IN TON</div>
+      <input id="amount" type="number" min="0.03" step="0.00001" placeholder="0.03">
+
+      <div class="sheet-actions">
+        <button class="close" id="close">Cancel</button>
+        <button class="primary" style="margin: 0; width: 48%; padding: 12px;" id="submit">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // State Variables
+    let balance = 0, activeRefs = 0, done = 0, miner = false, started = 0, check = false;
+
+    // DOM Helper
+    const $ = x => document.getElementById(x);
+
+    // Render UI
+    function render() {
+      let n = balance.toFixed(5);
+      $("balance").innerHTML = n + ' <small>GRAM</small>';
+      $("wdBalance").textContent = n + " GRAM";
+      $("minBalance").textContent = n;
+      $("activeRefs").textContent = activeRefs;
+      $("taskDone").textContent = done;
+
+      // Update milestone progress bars
+      document.querySelectorAll(".bar i").forEach(x => {
+        x.style.width = Math.min(100, (activeRefs / Number(x.dataset.t)) * 100) + "%";
+      });
+    }
+
+    // Mining Loop
+    function mining() {
+      if (!miner) return;
+
+      let elapsed = Date.now() - started;
+      let cycle = 86400000; // 24 hours in ms
+      let earned = Math.min(0.0001, (elapsed / cycle) * 0.0001);
+
+      $("mineAmount").innerHTML = earned.toFixed(5) + ' <span>GRAM</span>';
+
+      let pct = Math.min(100, (elapsed / cycle) * 100);
+      $("mineProgress").style.width = pct + "%";
+
+      let left = Math.max(0, cycle - elapsed);
+      let h = Math.floor(left / 3600000);
+      let m = Math.floor((left % 3600000) / 60000);
+      let s = Math.floor((left % 60000) / 1000);
+
+      $("timer").textContent = `Mining active • ${h}h ${m}m ${s}s remaining`;
+
+      requestAnimationFrame(mining);
+    }
+
+    // TAB NAVIGATION
+    document.querySelectorAll(".nav-tab").forEach(tab => {
+      tab.onclick = () => {
+        let tabId = tab.dataset.tab;
+
+        // Hide all tabs
+        document.querySelectorAll(".content").forEach(t => t.classList.remove("active"));
+
+        // Remove active from all nav tabs
+        document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+
+        // Show selected tab
+        $(tabId).classList.add("active");
+        tab.classList.add("active");
+      };
+    });
+
+    // EVENT LISTENERS
+
+    // Activate Miner
+    $("activate").onclick = () => {
+      if (miner) return;
+      miner = true;
+      started = Date.now();
+      $("activate").textContent = "Miner Active";
+      $("activate").classList.add("active-btn");
+      mining();
+    };
+
+    // Complete Tasks
+    document.querySelectorAll(".task").forEach(b => {
+      b.onclick = () => {
+        if (b.classList.contains("done")) return;
+        balance += Number(b.dataset.r);
+        done++;
+        b.textContent = "Done";
+        b.classList.add("done");
+        render();
+      };
+    });
+
+    // Daily Check-in
+    $("checkin").onclick = () => {
+      if (check) return;
+      check = true;
+      balance += 0.0005;
+      $("checkin").textContent = "Claimed";
+      $("checkin").classList.add("done");
+      render();
+    };
+
+    // View Referrals
+    $("viewRef").onclick = () => {
+      document.querySelector('[data-tab="invite-tab"]').click();
+    };
+
+    // Boost Button
+    $("boostBtn").onclick = () => {
+      if (done < 5) {
+        alert("Complete 5 tasks to claim boost!");
+        return;
+      }
+      balance += 0.05;
+      $("boostBtn").textContent = "Claimed";
+      $("boostBtn").classList.add("done");
+      render();
+    };
+
+    // Connect Wallet
+    $("wallet").onclick = () => {
+      $("wallet").textContent = "Wallet Connected";
+      $("wallet").style.color = "#6df3b7";
+    };
+
+    // Copy Referral Link
+    $("copy").onclick = async () => {
+      try {
+        await navigator.clipboard.writeText($("refLink").value);
+      } catch (e) {
+        $("refLink").select();
+        document.execCommand("copy");
+      }
+      $("copy").textContent = "Copied";
+      setTimeout(() => {
+        $("copy").textContent = "Copy";
+      }, 1200);
+    };
+
+    // Show Withdrawal Modal
+    $("withdrawBtn").onclick = () => {
+      $("modal").classList.add("show");
+    };
+
+    // Close Modal
+    $("close").onclick = () => {
+      $("modal").classList.remove("show");
+    };
+
+    // Submit Withdrawal
+    $("submit").onclick = () => {
+      if (!$("address").value.trim()) {
+        alert("Enter a TON wallet address.");
+        return;
+      }
+      if (Number($("amount").value) < 0.03) {
+        alert("Minimum withdrawal is 0.03 TON.");
+        return;
+      }
+      alert("Withdrawal request created in preview mode.");
+      $("modal").classList.remove("show");
+    };
+
+    // Initial Render
+    render();
+  </script>
+</body>
+</html>
