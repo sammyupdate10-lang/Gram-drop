@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>GRAMDROP</title>
   <style>
-    /* RESET & VARIABLES */
     * {
       box-sizing: border-box;
     }
@@ -28,7 +27,6 @@
       --green: #39df9a;
     }
 
-    /* LAYOUT */
     .app {
       max-width: 760px;
       margin: auto;
@@ -37,7 +35,6 @@
       position: relative;
     }
 
-    /* HEADER & BRANDING */
     header {
       display: flex;
       align-items: center;
@@ -83,9 +80,14 @@
       border-radius: 12px;
       font-weight: 800;
       cursor: pointer;
+      font-size: 11px;
     }
 
-    /* BALANCE SECTION */
+    .wallet.connected {
+      background: #0e3a2a;
+      color: #6df3b7;
+    }
+
     .balance {
       background: linear-gradient(145deg, #0e2741, #0a1423);
       border: 1px solid #193753;
@@ -154,7 +156,6 @@
       font-size: 10px;
     }
 
-    /* CONTENT SECTIONS */
     .content {
       display: none;
     }
@@ -184,7 +185,6 @@
       color: var(--muted);
     }
 
-    /* MINING SECTION */
     .mine {
       background: linear-gradient(150deg, #101f34, #0a1422);
       border: 1px solid #1d3854;
@@ -276,6 +276,11 @@
       cursor: pointer;
     }
 
+    .activate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .active-btn {
       background: #103a31 !important;
       color: #6df3b7 !important;
@@ -288,7 +293,6 @@
       margin-top: 9px;
     }
 
-    /* CARDS */
     .card {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -349,6 +353,12 @@
       font-weight: 850;
       cursor: pointer;
       flex-shrink: 0;
+      font-size: 11px;
+    }
+
+    .claim:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .claim.done {
@@ -356,7 +366,6 @@
       color: #6df3b7;
     }
 
-    /* EVENT CARDS */
     .event {
       background: linear-gradient(145deg, #121e34, #0c1524);
       border: 1px solid #27344b;
@@ -398,7 +407,6 @@
       color: var(--green);
     }
 
-    /* REFERRAL SECTION */
     .refbox {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -499,7 +507,6 @@
       border-radius: 99px;
     }
 
-    /* WITHDRAWAL SECTION */
     .withdrawbox {
       background: linear-gradient(145deg, #0d1e31, #0a1422);
       border: 1px solid #203852;
@@ -530,7 +537,11 @@
       margin-top: 10px;
     }
 
-    /* BOTTOM NAVIGATION */
+    .primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .nav-bar {
       position: fixed;
       bottom: 0;
@@ -576,7 +587,6 @@
       font-size: 20px;
     }
 
-    /* MODAL */
     .modal {
       display: none;
       position: fixed;
@@ -631,42 +641,54 @@
       cursor: pointer;
     }
 
-    /* RESPONSIVE */
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 20px;
+    }
+
+    .error {
+      background: #3a1515;
+      border: 1px solid #6b2d2d;
+      color: #ff9a9a;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .success {
+      background: #0e3a2a;
+      border: 1px solid #1a6b4f;
+      color: #6df3b7;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
     @media (max-width: 480px) {
       .app {
         padding: 14px 14px 110px;
-      }
-
-      .mini {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-
-      .amount {
-        font-size: 32px;
-      }
-
-      .levels {
-        grid-template-columns: 1fr 1fr 1fr;
       }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <!-- HEADER -->
     <header>
       <div class="brand">
         <div class="logo">G</div>
         <div>
           <strong>GRAMDROP</strong>
-          <span>Mine • Complete tasks • Earn</span>
+          <span>Mine • Earn • Withdraw</span>
         </div>
       </div>
-      <button class="wallet" id="wallet">Connect Wallet</button>
+      <button class="wallet" id="wallet">Connect</button>
     </header>
 
-    <!-- BALANCE HERO SECTION (Always Visible) -->
-    <section class="balance">
+    <section class="balance" id="balanceSection" style="display:none;">
       <div class="eyebrow">TOTAL GRAM BALANCE</div>
       <div class="amount" id="balance">0.00000 <small>GRAM</small></div>
       <div class="sub">Mining and eligible rewards are added to your balance.</div>
@@ -681,7 +703,7 @@
           <span>Tasks done</span>
         </div>
         <div>
-          <b id="minBalance">0.00000</b>
+          <b>0.03 TON</b>
           <span>Min withdrawal</span>
         </div>
       </div>
@@ -694,91 +716,17 @@
         <span>24 HOUR CYCLE</span>
       </div>
 
-      <div class="mine">
-        <div class="mine-top">
-          <div class="mine-icon">⛏</div>
-          <div class="mine-title">
-            <b>GRAM Miner</b>
-            <small>Activate to become an eligible referral.</small>
-          </div>
-          <div class="mine-rate">
-            +0.0001<br>
-            GRAM / 24h
-          </div>
-        </div>
-
-        <div class="mine-number" id="mineAmount">
-          0.00000 <span>GRAM</span>
-        </div>
-
-        <div class="timer" id="timer">Miner not activated</div>
-
-        <div class="progress">
-          <i id="mineProgress"></i>
-        </div>
-
-        <button class="activate" id="activate">Activate Miner</button>
-
-        <div class="note">
-          Mining rewards are simulated in this preview. In the live bot, the backend should calculate the 24-hour cycle and prevent duplicate claims.
-        </div>
-      </div>
+      <div id="miningStatus" class="loading">Loading mining data...</div>
     </section>
 
     <!-- EARN TAB (Tasks) -->
     <section class="content" id="earn-tab">
       <div class="section-head">
-        <h2>🎯 Tasks</h2>
+        <h2>⚡ Tasks</h2>
         <span>COMPLETE & EARN</span>
       </div>
 
-      <div class="card">
-        <div class="row">
-          <div class="ico">01</div>
-          <div class="grow">
-            <b>Join GRAMDROP Channel</b>
-            <small>Join the official Telegram channel.</small>
-          </div>
-          <div class="reward">+0.001</div>
-          <button class="claim task" data-r="0.001">Claim</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="row">
-          <div class="ico">02</div>
-          <div class="grow">
-            <b>Join Community</b>
-            <small>Complete the community campaign.</small>
-          </div>
-          <div class="reward">+0.001</div>
-          <button class="claim task" data-r="0.001">Claim</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="row">
-          <div class="ico">03</div>
-          <div class="grow">
-            <b>Premium Campaign</b>
-            <small>Higher-value promotional task.</small>
-          </div>
-          <div class="reward">+0.002</div>
-          <button class="claim task" data-r="0.002">Claim</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="row">
-          <div class="ico">04</div>
-          <div class="grow">
-            <b>Share & Refer</b>
-            <small>Share GRAMDROP with friends.</small>
-          </div>
-          <div class="reward">+0.0005</div>
-          <button class="claim task" data-r="0.0005">Claim</button>
-        </div>
-      </div>
+      <div id="tasksContainer" class="loading">Loading tasks...</div>
     </section>
 
     <!-- EVENTS TAB -->
@@ -788,35 +736,7 @@
         <span>LIMITED REWARDS</span>
       </div>
 
-      <div class="card event">
-        <span class="tag">REFERRAL EVENT</span>
-        <b>Referral Milestone Rush</b>
-        <p>Activate your miner and invite active users to unlock milestone bonuses.</p>
-        <div class="event-bottom">
-          <strong>Up to +1 GRAM</strong>
-          <button class="claim" id="viewRef">View</button>
-        </div>
-      </div>
-
-      <div class="card event">
-        <span class="tag">DAILY EVENT</span>
-        <b>Daily Check-in</b>
-        <p>Return every 24 hours to claim your daily reward.</p>
-        <div class="event-bottom">
-          <strong>+0.0005 GRAM</strong>
-          <button class="claim" id="checkin">Claim</button>
-        </div>
-      </div>
-
-      <div class="card event">
-        <span class="tag">BONUS EVENT</span>
-        <b>Miner Boost</b>
-        <p>Complete 5 tasks to unlock a mining speed boost.</p>
-        <div class="event-bottom">
-          <strong>2x Mining</strong>
-          <button class="claim" id="boostBtn">Claim</button>
-        </div>
-      </div>
+      <div id="eventsContainer" class="loading">Loading events...</div>
     </section>
 
     <!-- INVITE TAB (Referrals) -->
@@ -826,69 +746,7 @@
         <span>3 LEVELS</span>
       </div>
 
-      <div class="refbox">
-        <div class="eyebrow">COMMISSION STRUCTURE</div>
-        <div class="levels">
-          <div class="level">
-            <b>15%</b>
-            <small>LEVEL 1</small>
-          </div>
-          <div class="level">
-            <b>5%</b>
-            <small>LEVEL 2</small>
-          </div>
-          <div class="level">
-            <b>1%</b>
-            <small>LEVEL 3</small>
-          </div>
-        </div>
-
-        <div class="refinput">
-          <input id="refLink" readonly value="https://t.me/GRAMDROP_Bot?start=123456">
-          <button class="copy" id="copy">Copy</button>
-        </div>
-
-        <div class="note">
-          A user only becomes an active referral after activating their miner. Valid referrals count toward your milestone bonuses.
-        </div>
-      </div>
-
-      <div class="section-head" style="margin-top: 16px;">
-        <h2>Milestones</h2>
-      </div>
-
-      <div class="milestones">
-        <div class="mile">
-          <b>5 active</b>
-          <small>+0.01 GRAM</small>
-          <div class="bar"><i data-t="5"></i></div>
-        </div>
-        <div class="mile">
-          <b>20 active</b>
-          <small>+0.05 GRAM</small>
-          <div class="bar"><i data-t="20"></i></div>
-        </div>
-        <div class="mile">
-          <b>50 active</b>
-          <small>+0.15 GRAM</small>
-          <div class="bar"><i data-t="50"></i></div>
-        </div>
-        <div class="mile">
-          <b>100 active</b>
-          <small>+0.40 GRAM</small>
-          <div class="bar"><i data-t="100"></i></div>
-        </div>
-        <div class="mile">
-          <b>500 active</b>
-          <small>+1.00 GRAM</small>
-          <div class="bar"><i data-t="500"></i></div>
-        </div>
-        <div class="mile">
-          <b>1000 active</b>
-          <small>+5.00 GRAM</small>
-          <div class="bar"><i data-t="1000"></i></div>
-        </div>
-      </div>
+      <div id="referralsContainer" class="loading">Loading referrals...</div>
     </section>
 
     <!-- WITHDRAW TAB -->
@@ -898,28 +756,7 @@
         <span>TON PAYMENT</span>
       </div>
 
-      <div class="withdrawbox">
-        <div class="withdrawline">
-          <span>Available</span>
-          <b id="wdBalance">0.00000 GRAM</b>
-        </div>
-        <div class="withdrawline">
-          <span>Minimum withdrawal</span>
-          <b>0.03 TON</b>
-        </div>
-        <div class="withdrawline">
-          <span>Payment network</span>
-          <b>TON Blockchain</b>
-        </div>
-        <div class="withdrawline">
-          <span>Exchange rate</span>
-          <b>1 GRAM = 1 TON</b>
-        </div>
-        <button class="primary" id="withdrawBtn">Request Withdrawal</button>
-        <div class="note">
-          The production version should validate the user's balance, TON wallet, withdrawal limits and payment status on the server.
-        </div>
-      </div>
+      <div id="withdrawContainer" class="loading">Loading withdrawal...</div>
     </section>
   </main>
 
@@ -960,171 +797,347 @@
 
       <div class="sheet-actions">
         <button class="close" id="close">Cancel</button>
-        <button class="primary" style="margin: 0; width: 48%; padding: 12px;" id="submit">Submit</button>
+        <button class="primary" style="margin: 0; width: 48%; padding: 12px;" id="submit" disabled>Submit</button>
       </div>
     </div>
   </div>
 
   <!-- JAVASCRIPT -->
   <script>
-    // State Variables
-    let balance = 0, activeRefs = 0, done = 0, miner = false, started = 0, check = false;
+    // Configuration
+    const API_BASE = 'https://gramdrop.vercel.app/api'; // Change to your Vercel URL
+    let user = null;
+    let userId = null;
 
-    // DOM Helper
     const $ = x => document.getElementById(x);
 
-    // Render UI
-    function render() {
-      let n = balance.toFixed(5);
-      $("balance").innerHTML = n + ' <small>GRAM</small>';
-      $("wdBalance").textContent = n + " GRAM";
-      $("minBalance").textContent = n;
-      $("activeRefs").textContent = activeRefs;
-      $("taskDone").textContent = done;
+    // Telegram WebApp API
+    const tg = window.Telegram?.WebApp;
 
-      // Update milestone progress bars
-      document.querySelectorAll(".bar i").forEach(x => {
-        x.style.width = Math.min(100, (activeRefs / Number(x.dataset.t)) * 100) + "%";
+    // Initialize
+    async function init() {
+      try {
+        if (tg) {
+          tg.ready();
+          const initData = tg.initData;
+          
+          // Authenticate
+          const authRes = await fetch(`${API_BASE}/auth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ initData })
+          });
+
+          if (!authRes.ok) throw new Error('Auth failed');
+
+          const auth = await authRes.json();
+          user = auth.user;
+          userId = auth.user.id;
+
+          $('wallet').classList.add('connected');
+          $('wallet').textContent = `${auth.user.username} ✓`;
+          $('balanceSection').style.display = 'block';
+
+          loadDashboard();
+        } else {
+          // Demo mode (no Telegram)
+          userId = 'demo-user-123';
+          $('wallet').classList.add('connected');
+          $('wallet').textContent = 'Demo Mode ✓';
+          $('balanceSection').style.display = 'block';
+          loadDemoData();
+        }
+      } catch (error) {
+        console.error('Init error:', error);
+        $('wallet').textContent = 'Error: ' + error.message;
+      }
+    }
+
+    // Load all dashboard data
+    async function loadDashboard() {
+      loadMining();
+      loadTasks();
+      loadUser();
+      loadReferrals();
+      setupTabNavigation();
+    }
+
+    // Load mining data
+    async function loadMining() {
+      try {
+        const res = await fetch(`${API_BASE}/mining?userId=${userId}`);
+        const data = await res.json();
+
+        let html = `
+          <div class="mine">
+            <div class="mine-top">
+              <div class="mine-icon">⛏</div>
+              <div class="mine-title">
+                <b>GRAM Miner</b>
+                <small>Activate to become an eligible referral.</small>
+              </div>
+              <div class="mine-rate">
+                +0.0001<br>
+                GRAM / 24h
+              </div>
+            </div>
+
+            <div class="mine-number" id="mineAmount">
+              ${(parseFloat(data.earned) || 0).toFixed(5)} <span>GRAM</span>
+            </div>
+
+            <div class="timer" id="timer">${data.mining_active ? `${data.timer_remaining ? Math.floor(data.timer_remaining/3600000) + 'h remaining' : 'Cycle complete!'}` : 'Miner not activated'}</div>
+
+            <div class="progress">
+              <i id="mineProgress" style="width: ${data.progress || 0}%"></i>
+            </div>
+
+            <button class="activate" id="activate" onclick="activateMiner()" ${data.mining_active ? 'disabled' : ''}>
+              ${data.mining_active ? 'Miner Active' : 'Activate Miner'}
+            </button>
+
+            <div class="note">Mining cycles are 24 hours. After completion, claim your rewards.</div>
+          </div>
+        `;
+
+        $('miningStatus').innerHTML = html;
+        if (data.mining_active) {
+          $('activate').classList.add('active-btn');
+        }
+      } catch (error) {
+        $('miningStatus').innerHTML = `<div class="error">Error loading mining: ${error.message}</div>`;
+      }
+    }
+
+    // Activate miner
+    async function activateMiner() {
+      try {
+        const btn = $('activate');
+        btn.disabled = true;
+        btn.textContent = 'Activating...';
+
+        const res = await fetch(`${API_BASE}/mining?userId=${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!res.ok) throw new Error('Activation failed');
+
+        const data = await res.json();
+        $('miningStatus').innerHTML = '<div class="success">✓ Miner activated! Mining started.</div>';
+        setTimeout(() => loadMining(), 1000);
+      } catch (error) {
+        $('miningStatus').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        loadMining();
+      }
+    }
+
+    // Load tasks
+    async function loadTasks() {
+      try {
+        let html = `
+          <div class="card">
+            <div class="row">
+              <div class="ico">01</div>
+              <div class="grow">
+                <b>Join GRAMDROP Channel</b>
+                <small>Join the official Telegram channel.</small>
+              </div>
+              <div class="reward">+0.001</div>
+              <button class="claim" onclick="claimTask('channel')">Claim</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div class="ico">02</div>
+              <div class="grow">
+                <b>Join Community</b>
+                <small>Complete the community campaign.</small>
+              </div>
+              <div class="reward">+0.001</div>
+              <button class="claim" onclick="claimTask('community')">Claim</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div class="ico">03</div>
+              <div class="grow">
+                <b>Premium Campaign</b>
+                <small>Higher-value promotional task.</small>
+              </div>
+              <div class="reward">+0.002</div>
+              <button class="claim" onclick="claimTask('premium')">Claim</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div class="ico">04</div>
+              <div class="grow">
+                <b>Share & Refer</b>
+                <small>Share GRAMDROP with friends.</small>
+              </div>
+              <div class="reward">+0.0005</div>
+              <button class="claim" onclick="claimTask('share')">Claim</button>
+            </div>
+          </div>
+        `;
+
+        $('tasksContainer').innerHTML = html;
+      } catch (error) {
+        $('tasksContainer').innerHTML = `<div class="error">Error loading tasks: ${error.message}</div>`;
+      }
+    }
+
+    // Claim task
+    async function claimTask(taskType) {
+      try {
+        const res = await fetch(`${API_BASE}/tasks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, taskType })
+        });
+
+        if (!res.ok) throw new Error('Failed to claim task');
+
+        const data = await res.json();
+        alert(`✓ ${data.message}`);
+        loadTasks();
+        loadUser();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Load user data
+    async function loadUser() {
+      try {
+        const res = await fetch(`${API_BASE}/user?userId=${userId}`);
+        const data = await res.json();
+
+        $('balance').innerHTML = `${parseFloat(data.user.balance).toFixed(5)} <small>GRAM</small>`;
+        $('activeRefs').textContent = data.stats.active_referrals;
+        $('taskDone').textContent = data.stats.tasks_completed;
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    }
+
+    // Load referrals
+    async function loadReferrals() {
+      try {
+        const res = await fetch(`${API_BASE}/referrals?userId=${userId}`);
+        const data = await res.json();
+
+        let html = `
+          <div class="refbox">
+            <div class="eyebrow">COMMISSION STRUCTURE</div>
+            <div class="levels">
+              <div class="level">
+                <b>15%</b>
+                <small>LEVEL 1</small>
+              </div>
+              <div class="level">
+                <b>5%</b>
+                <small>LEVEL 2</small>
+              </div>
+              <div class="level">
+                <b>1%</b>
+                <small>LEVEL 3</small>
+              </div>
+            </div>
+
+            <div class="refinput">
+              <input id="refLink" readonly value="https://t.me/GRAMDROP_Bot?start=${userId}">
+              <button class="copy" onclick="copyRefLink()">Copy</button>
+            </div>
+
+            <div class="note">
+              Active referrals (those who activated miner) count toward your milestones.
+            </div>
+          </div>
+
+          <div class="section-head" style="margin-top: 16px;">
+            <h2>Milestones</h2>
+          </div>
+
+          <div class="milestones">
+            <div class="mile">
+              <b>5 active</b>
+              <small>+0.01 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/5)*100)}%"></i></div>
+            </div>
+            <div class="mile">
+              <b>20 active</b>
+              <small>+0.05 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/20)*100)}%"></i></div>
+            </div>
+            <div class="mile">
+              <b>50 active</b>
+              <small>+0.15 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/50)*100)}%"></i></div>
+            </div>
+            <div class="mile">
+              <b>100 active</b>
+              <small>+0.40 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/100)*100)}%"></i></div>
+            </div>
+            <div class="mile">
+              <b>500 active</b>
+              <small>+1.00 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/500)*100)}%"></i></div>
+            </div>
+            <div class="mile">
+              <b>1000 active</b>
+              <small>+5.00 GRAM</small>
+              <div class="bar"><i style="width: ${Math.min(100, (data.active_referrals/1000)*100)}%"></i></div>
+            </div>
+          </div>
+        `;
+
+        $('referralsContainer').innerHTML = html;
+      } catch (error) {
+        $('referralsContainer').innerHTML = `<div class="error">Error loading referrals: ${error.message}</div>`;
+      }
+    }
+
+    function copyRefLink() {
+      const link = $('refLink').value;
+      navigator.clipboard.writeText(link);
+      alert('Referral link copied!');
+    }
+
+    // Setup tab navigation
+    function setupTabNavigation() {
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.onclick = () => {
+          const tabId = tab.dataset.tab;
+
+          document.querySelectorAll('.content').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+          $(tabId).classList.add('active');
+          tab.classList.add('active');
+        };
       });
     }
 
-    // Mining Loop
-    function mining() {
-      if (!miner) return;
+    // Load demo data (for testing without Telegram)
+    function loadDemoData() {
+      $('balance').innerHTML = '0.00235 <small>GRAM</small>';
+      $('activeRefs').textContent = '3';
+      $('taskDone').textContent = '2';
 
-      let elapsed = Date.now() - started;
-      let cycle = 86400000; // 24 hours in ms
-      let earned = Math.min(0.0001, (elapsed / cycle) * 0.0001);
-
-      $("mineAmount").innerHTML = earned.toFixed(5) + ' <span>GRAM</span>';
-
-      let pct = Math.min(100, (elapsed / cycle) * 100);
-      $("mineProgress").style.width = pct + "%";
-
-      let left = Math.max(0, cycle - elapsed);
-      let h = Math.floor(left / 3600000);
-      let m = Math.floor((left % 3600000) / 60000);
-      let s = Math.floor((left % 60000) / 1000);
-
-      $("timer").textContent = `Mining active • ${h}h ${m}m ${s}s remaining`;
-
-      requestAnimationFrame(mining);
+      loadMining();
+      loadTasks();
+      loadReferrals();
+      setupTabNavigation();
     }
 
-    // TAB NAVIGATION
-    document.querySelectorAll(".nav-tab").forEach(tab => {
-      tab.onclick = () => {
-        let tabId = tab.dataset.tab;
-
-        // Hide all tabs
-        document.querySelectorAll(".content").forEach(t => t.classList.remove("active"));
-
-        // Remove active from all nav tabs
-        document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
-
-        // Show selected tab
-        $(tabId).classList.add("active");
-        tab.classList.add("active");
-      };
-    });
-
-    // EVENT LISTENERS
-
-    // Activate Miner
-    $("activate").onclick = () => {
-      if (miner) return;
-      miner = true;
-      started = Date.now();
-      $("activate").textContent = "Miner Active";
-      $("activate").classList.add("active-btn");
-      mining();
-    };
-
-    // Complete Tasks
-    document.querySelectorAll(".task").forEach(b => {
-      b.onclick = () => {
-        if (b.classList.contains("done")) return;
-        balance += Number(b.dataset.r);
-        done++;
-        b.textContent = "Done";
-        b.classList.add("done");
-        render();
-      };
-    });
-
-    // Daily Check-in
-    $("checkin").onclick = () => {
-      if (check) return;
-      check = true;
-      balance += 0.0005;
-      $("checkin").textContent = "Claimed";
-      $("checkin").classList.add("done");
-      render();
-    };
-
-    // View Referrals
-    $("viewRef").onclick = () => {
-      document.querySelector('[data-tab="invite-tab"]').click();
-    };
-
-    // Boost Button
-    $("boostBtn").onclick = () => {
-      if (done < 5) {
-        alert("Complete 5 tasks to claim boost!");
-        return;
-      }
-      balance += 0.05;
-      $("boostBtn").textContent = "Claimed";
-      $("boostBtn").classList.add("done");
-      render();
-    };
-
-    // Connect Wallet
-    $("wallet").onclick = () => {
-      $("wallet").textContent = "Wallet Connected";
-      $("wallet").style.color = "#6df3b7";
-    };
-
-    // Copy Referral Link
-    $("copy").onclick = async () => {
-      try {
-        await navigator.clipboard.writeText($("refLink").value);
-      } catch (e) {
-        $("refLink").select();
-        document.execCommand("copy");
-      }
-      $("copy").textContent = "Copied";
-      setTimeout(() => {
-        $("copy").textContent = "Copy";
-      }, 1200);
-    };
-
-    // Show Withdrawal Modal
-    $("withdrawBtn").onclick = () => {
-      $("modal").classList.add("show");
-    };
-
-    // Close Modal
-    $("close").onclick = () => {
-      $("modal").classList.remove("show");
-    };
-
-    // Submit Withdrawal
-    $("submit").onclick = () => {
-      if (!$("address").value.trim()) {
-        alert("Enter a TON wallet address.");
-        return;
-      }
-      if (Number($("amount").value) < 0.03) {
-        alert("Minimum withdrawal is 0.03 TON.");
-        return;
-      }
-      alert("Withdrawal request created in preview mode.");
-      $("modal").classList.remove("show");
-    };
-
-    // Initial Render
-    render();
+    // Initialize on load
+    window.addEventListener('load', init);
   </script>
 </body>
 </html>
