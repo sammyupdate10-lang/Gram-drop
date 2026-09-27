@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GRAMDROP Admin</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #050b14;
+      color: #f7fbff;
+    }
+
+    :root {
+      --bg: #050b14;
+      --panel: #0b1524;
+      --line: #1b2c42;
+      --muted: #8193aa;
+      --cyan: #28b8ff;
+      --green: #39df9a;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0e2741, #0a1423);
+      border: 1px solid #193753;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .logout {
+      background: #ff4444;
+      color: white;
+      border: 0;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout:hover {
+      background: #cc0000;
+    }
+
+    .login-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .login-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      background: #07111d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: white;
+      margin: 10px 0;
+      font-family: inherit;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #2bbdff, #477cff);
+      color: #03101a;
+      border: 0;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .login-box button:hover {
+      opacity: 0.9;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin: 15px 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      background: #07111d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: white;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #2bbdff, #477cff);
+      color: #03101a;
+      border: 0;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #39df9a, #2bb878);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .table th {
+      background: #0a1524;
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-weight: bold;
+    }
+
+    .table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .error {
+      background: #3a1515;
+      border: 1px solid #6b2d2d;
+      color: #ff9a9a;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .success {
+      background: #0e3a2a;
+      border: 1px solid #1a6b4f;
+      color: #6df3b7;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(145deg, #101f34, #0a1422);
+      border: 1px solid #1d3854;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--cyan);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+      <div class="login-box">
+        <h2>🔐 GRAMDROP Admin</h2>
+        <p style="text-align: center; color: var(--muted);">Enter admin password</p>
+        <input type="password" id="adminPassword" placeholder="Admin password" onkeypress="if(event.key==='Enter') login()">
+        <button onclick="login()">Login</button>
+        <div id="loginError" class="error" style="display: none; margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="dashboard" style="display: none;">
+      <header>
+        <h1>⚙️ GRAMDROP Admin Dashboard</h1>
+        <button class="logout" onclick="logout()">Logout</button>
+      </header>
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalBalance">0</div>
+          <div class="stat-label">Total Balance (GRAM)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="pendingWithdrawals">0</div>
+          <div class="stat-label">Pending Withdrawals</div>
+        </div>
+      </div>
+
+      <!-- BROADCAST SECTION -->
+      <div class="section">
+        <h2>📢 Send Broadcast to All Users</h2>
+        <div id="broadcastMessage"></div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="broadcastTitle" placeholder="e.g., Special Event">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="broadcastText" placeholder="e.g., Join our special event happening now!"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Emoji</label>
+          <input type="text" id="broadcastEmoji" placeholder="🎁" maxlength="2" value="📢">
+        </div>
+        <button class="btn" onclick="sendBroadcast()">Send Broadcast</button>
+      </div>
+
+      <!-- WITHDRAWALS SECTION -->
+      <div class="section">
+        <h2>💸 Pending Withdrawals</h2>
+        <div id="withdrawalsMessage"></div>
+        <table class="table" id="withdrawalsTable" style="display: none;">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Amount (TON)</th>
+              <th>Wallet Address</th>
+              <th>Created</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsBody"></tbody>
+        </table>
+        <div id="withdrawalsLoading" class="loading">Loading withdrawals...</div>
+      </div>
+
+      <!-- RECENT BROADCASTS SECTION -->
+      <div class="section">
+        <h2>📋 Recent Broadcasts</h2>
+        <div id="broadcastsLoading" class="loading">Loading broadcasts...</div>
+        <table class="table" id="broadcastsTable" style="display: none;">
+          <thead>
+            <tr>
+              <th>Emoji</th>
+              <th>Title</th>
+              <th>Message</th>
+              <th>Sent</th>
+            </tr>
+          </thead>
+          <tbody id="broadcastsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://gram-drop.vercel.app/api';
+    const ADMIN_PASSWORD = 'gramdrop123'; // Change this!
+
+    let isLoggedIn = false;
+
+    function login() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === ADMIN_PASSWORD) {
+        isLoggedIn = true;
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadDashboard();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginError').textContent = '❌ Wrong password!';
+      }
+    }
+
+    function logout() {
+      isLoggedIn = false;
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+
+    async function loadDashboard() {
+      loadWithdrawals();
+      loadBroadcasts();
+      loadStats();
+    }
+
+    async function loadStats() {
+      try {
+        // Placeholder stats
+        document.getElementById('totalUsers').textContent = '0';
+        document.getElementById('totalBalance').textContent = '0';
+        document.getElementById('pendingWithdrawals').textContent = '0';
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    async function sendBroadcast() {
+      const title = document.getElementById('broadcastTitle').value;
+      const message = document.getElementById('broadcastText').value;
+      const emoji = document.getElementById('broadcastEmoji').value;
+
+      if (!title || !message) {
+        alert('Please fill in title and message!');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/broadcast`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            adminId: '7296306496',
+            title: title,
+            message: message,
+            emoji: emoji
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('broadcastMessage').innerHTML = '<div class="success">✅ Broadcast sent to all users!</div>';
+          document.getElementById('broadcastTitle').value = '';
+          document.getElementById('broadcastText').value = '';
+          document.getElementById('broadcastEmoji').value = '📢';
+          setTimeout(() => {
+            document.getElementById('broadcastMessage').innerHTML = '';
+            loadBroadcasts();
+          }, 2000);
+        } else {
+          document.getElementById('broadcastMessage').innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+        }
+      } catch (error) {
+        document.getElementById('broadcastMessage').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    async function loadWithdrawals() {
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals`, {
+          headers: { 'Authorization': `Bearer ${ADMIN_PASSWORD}` }
+        });
+
+        if (!res.ok) throw new Error('Failed to load withdrawals');
+
+        const data = await res.json();
+        const withdrawals = data.withdrawals || [];
+
+        document.getElementById('withdrawalsLoading').style.display = 'none';
+
+        if (withdrawals.length === 0) {
+          document.getElementById('withdrawalsMessage').innerHTML = '<p style="color: var(--muted);">No pending withdrawals</p>';
+          return;
+        }
+
+        let html = '';
+        withdrawals.forEach(w => {
+          html += `
+            <tr>
+              <td>${w.user_id.substring(0, 8)}...</td>
+              <td>${w.amount}</td>
+              <td><code style="font-size: 11px;">${w.ton_wallet_address}</code></td>
+              <td>${new Date(w.created_at).toLocaleDateString()}</td>
+              <td>
+                <button class="btn btn-success" onclick="completeWithdrawal('${w.id}')">Complete</button>
+                <button class="btn btn-danger" onclick="rejectWithdrawal('${w.id}')">Reject</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        document.getElementById('withdrawalsTable').style.display = 'table';
+        document.getElementById('withdrawalsBody').innerHTML = html;
+        document.getElementById('pendingWithdrawals').textContent = withdrawals.length;
+      } catch (error) {
+        document.getElementById('withdrawalsLoading').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+      }
+    }
+
+    async function completeWithdrawal(withdrawalId) {
+      if (!confirm('Mark this withdrawal as completed?')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals?withdrawalId=${withdrawalId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${ADMIN_PASSWORD}`
+          },
+          body: JSON.stringify({ status: 'completed' })
+        });
+
+        if (res.ok) {
+          alert('✅ Withdrawal marked as completed!');
+          loadWithdrawals();
+        } else {
+          alert('❌ Error updating withdrawal');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function rejectWithdrawal(withdrawalId) {
+      if (!confirm('Reject this withdrawal?')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals?withdrawalId=${withdrawalId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${ADMIN_PASSWORD}`
+          },
+          body: JSON.stringify({ status: 'rejected' })
+        });
+
+        if (res.ok) {
+          alert('✅ Withdrawal rejected!');
+          loadWithdrawals();
+        } else {
+          alert('❌ Error rejecting withdrawal');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function loadBroadcasts() {
+      try {
+        const res = await fetch(`${API_BASE}/get-broadcasts`);
+        const data = await res.json();
+        const broadcasts = data.broadcasts || [];
+
+        document.getElementById('broadcastsLoading').style.display = 'none';
+
+        if (broadcasts.length === 0) {
+          document.getElementById('broadcastsTable').style.display = 'none';
+          return;
+        }
+
+        let html = '';
+        broadcasts.forEach(b => {
+          html += `
+            <tr>
+              <td>${b.emoji}</td>
+              <td>${b.title}</td>
+              <td>${b.message.substring(0, 50)}...</td>
+              <td>${new Date(b.created_at).toLocaleDateString()}</td>
+            </tr>
+          `;
+        });
+
+        document.getElementById('broadcastsTable').style.display = 'table';
+        document.getElementById('broadcastsBody').innerHTML = html;
+      } catch (error) {
+        console.error('Error loading broadcasts:', error);
+      }
+    }
+
+    window.addEventListener('load', () => {
+      document.getElementById('adminPassword').focus();
+    });
+  </script>
+</body>
+</html>
