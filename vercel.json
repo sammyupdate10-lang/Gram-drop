@@ -1,0 +1,9 @@
+{
+  "buildCommand": "echo 'Building...'",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "cleanUrls": false
+}
