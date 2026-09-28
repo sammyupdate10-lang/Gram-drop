@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GRAMDROP Admin</title>
+  <title>GRAMDROP Admin Pro</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,10 +23,12 @@
       --muted: #8193aa;
       --cyan: #28b8ff;
       --green: #39df9a;
+      --red: #ff4444;
+      --orange: #ff9944;
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: auto;
       padding: 20px;
     }
@@ -48,7 +50,7 @@
     }
 
     .logout {
-      background: #ff4444;
+      background: var(--red);
       color: white;
       border: 0;
       padding: 10px 15px;
@@ -100,115 +102,57 @@
       color: #03101a;
       border: 0;
       border-radius: 8px;
-      font-weight: bold;
       cursor: pointer;
-      margin-top: 15px;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 16px;
     }
 
     .login-box button:hover {
       opacity: 0.9;
     }
 
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 500;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .tab-btn:hover {
+      color: white;
+    }
+
     .section {
-      background: var(--panel);
+      background: linear-gradient(145deg, #0b1524, #0a0f1f);
       border: 1px solid var(--line);
-      border-radius: 15px;
+      border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
     }
 
     .section h2 {
       margin-top: 0;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 10px;
-    }
-
-    .form-group {
-      margin: 15px 0;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      background: #07111d;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      color: white;
-      font-family: inherit;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .btn {
-      background: linear-gradient(135deg, #2bbdff, #477cff);
-      color: #03101a;
-      border: 0;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #39df9a, #2bb878);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-      font-size: 13px;
-    }
-
-    .table th {
-      background: #0a1524;
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      font-weight: bold;
-    }
-
-    .table td {
-      padding: 10px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .error {
-      background: #3a1515;
-      border: 1px solid #6b2d2d;
-      color: #ff9a9a;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .success {
-      background: #0e3a2a;
-      border: 1px solid #1a6b4f;
-      color: #6df3b7;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      font-size: 18px;
     }
 
     .stats-grid {
@@ -238,10 +182,230 @@
       margin-top: 5px;
     }
 
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: var(--cyan);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      background: #07111d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: white;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #2bbdff, #477cff);
+      color: #03101a;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: opacity 0.3s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green), #2acd7a);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--red), #ff6666);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--orange), #ffbb55);
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: #0a1422;
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background: rgba(40, 184, 255, 0.05);
+    }
+
+    .error {
+      background: #3a1515;
+      border: 1px solid #8a2222;
+      color: #ff9999;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .success {
+      background: #0e3a2a;
+      border: 1px solid #1a6b4f;
+      color: #6df3b7;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .badge-green {
+      background: rgba(57, 223, 154, 0.2);
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: rgba(255, 68, 68, 0.2);
+      color: var(--red);
+    }
+
+    .badge-orange {
+      background: rgba(255, 153, 68, 0.2);
+      color: var(--orange);
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #07111d;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .setting-info h3 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+
+    .setting-info p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .setting-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .setting-value {
+      background: #0a1422;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--cyan);
+      font-weight: bold;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--line);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
     .loading {
       text-align: center;
-      color: var(--muted);
       padding: 20px;
+      color: var(--muted);
+    }
+
+    .user-card {
+      background: #07111d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .user-card h3 {
+      margin: 0 0 10px 0;
+      color: var(--cyan);
+    }
+
+    .user-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .user-info p {
+      margin: 0;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -250,7 +414,7 @@
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="login-page">
       <div class="login-box">
-        <h2>🔐 GRAMDROP Admin</h2>
+        <h2>🔐 GRAMDROP Admin Pro</h2>
         <p style="text-align: center; color: var(--muted);">Enter admin password</p>
         <input type="password" id="adminPassword" placeholder="Admin password" onkeypress="if(event.key==='Enter') login()">
         <button onclick="login()">Login</button>
@@ -261,7 +425,7 @@
     <!-- ADMIN DASHBOARD -->
     <div id="dashboard" style="display: none;">
       <header>
-        <h1>⚙️ GRAMDROP Admin Dashboard</h1>
+        <h1>⚙️ GRAMDROP Admin Pro</h1>
         <button class="logout" onclick="logout()">Logout</button>
       </header>
 
@@ -281,59 +445,203 @@
         </div>
       </div>
 
-      <!-- BROADCAST SECTION -->
-      <div class="section">
-        <h2>📢 Send Broadcast to All Users</h2>
-        <div id="broadcastMessage"></div>
-        <div class="form-group">
-          <label>Title</label>
-          <input type="text" id="broadcastTitle" placeholder="e.g., Special Event">
-        </div>
-        <div class="form-group">
-          <label>Message</label>
-          <textarea id="broadcastText" placeholder="e.g., Join our special event happening now!"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Emoji</label>
-          <input type="text" id="broadcastEmoji" placeholder="🎁" maxlength="2" value="📢">
-        </div>
-        <button class="btn" onclick="sendBroadcast()">Send Broadcast</button>
+      <!-- TAB NAVIGATION -->
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('broadcast')">📢 Broadcast</button>
+        <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Withdrawals</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+        <button class="tab-btn" onclick="switchTab('tasks')">📋 Tasks</button>
+        <button class="tab-btn" onclick="switchTab('users')">👥 Users</button>
       </div>
 
-      <!-- WITHDRAWALS SECTION -->
-      <div class="section">
-        <h2>💸 Pending Withdrawals</h2>
-        <div id="withdrawalsMessage"></div>
-        <table class="table" id="withdrawalsTable" style="display: none;">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Amount (TON)</th>
-              <th>Wallet Address</th>
-              <th>Created</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="withdrawalsBody"></tbody>
-        </table>
-        <div id="withdrawalsLoading" class="loading">Loading withdrawals...</div>
+      <!-- BROADCAST TAB -->
+      <div id="broadcast" class="tab-content active">
+        <div class="section">
+          <h2>📢 Send Broadcast to All Users</h2>
+          <div id="broadcastMessage"></div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="broadcastTitle" placeholder="e.g., Special Event">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="broadcastText" placeholder="e.g., Join our special event happening now!"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Emoji</label>
+            <input type="text" id="broadcastEmoji" placeholder="🎁" maxlength="2" value="📢">
+          </div>
+          <button class="btn btn-success" onclick="sendBroadcast()">Send Broadcast</button>
+        </div>
+
+        <div class="section">
+          <h2>📋 Recent Broadcasts</h2>
+          <div id="broadcastsLoading" class="loading">Loading broadcasts...</div>
+          <table id="broadcastsTable" style="display: none;">
+            <thead>
+              <tr>
+                <th>Emoji</th>
+                <th>Title</th>
+                <th>Message</th>
+                <th>Sent</th>
+              </tr>
+            </thead>
+            <tbody id="broadcastsBody"></tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- RECENT BROADCASTS SECTION -->
-      <div class="section">
-        <h2>📋 Recent Broadcasts</h2>
-        <div id="broadcastsLoading" class="loading">Loading broadcasts...</div>
-        <table class="table" id="broadcastsTable" style="display: none;">
-          <thead>
-            <tr>
-              <th>Emoji</th>
-              <th>Title</th>
-              <th>Message</th>
-              <th>Sent</th>
-            </tr>
-          </thead>
-          <tbody id="broadcastsBody"></tbody>
-        </table>
+      <!-- WITHDRAWALS TAB -->
+      <div id="withdrawals" class="tab-content">
+        <div class="section">
+          <h2>💸 Pending Withdrawals</h2>
+          <div id="withdrawalsMessage"></div>
+          <table id="withdrawalsTable" style="display: none;">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Amount (TON)</th>
+                <th>Wallet Address</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsBody"></tbody>
+          </table>
+          <div id="withdrawalsLoading" class="loading">Loading withdrawals...</div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="settings" class="tab-content">
+        <div class="section">
+          <h2>💳 Payment Channel Settings</h2>
+          <div id="paymentMessage"></div>
+          
+          <div class="form-group">
+            <label>Telegram Payment Channel ID</label>
+            <input type="text" id="paymentChannelId" placeholder="e.g., -1001234567890" value="">
+            <small style="color: var(--muted);">This is where approved payments will be logged. Get ID from @getidsbot in Telegram</small>
+          </div>
+
+          <button class="btn btn-success" onclick="updatePaymentChannel()">Save Payment Channel</button>
+        </div>
+
+        <div class="section">
+          <h2>⚡ Mining Reward Settings</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <h3>Mining Reward per 24h</h3>
+              <p>Current GRAM earned every 24 hours of mining</p>
+            </div>
+            <div class="setting-controls">
+              <button class="btn btn-small btn-danger" onclick="decreaseMiningReward()">-</button>
+              <div class="setting-value" id="miningRewardValue">0.0001</div>
+              <button class="btn btn-small btn-success" onclick="increaseMiningReward()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>💳 Withdrawal Settings</h2>
+          <div id="withdrawalMessage"></div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Minimum Withdrawal (TON)</label>
+              <input type="number" id="minWithdrawal" step="0.001" placeholder="0.03" value="0.03">
+            </div>
+            <div class="form-group">
+              <label>Maximum Withdrawal (TON)</label>
+              <input type="number" id="maxWithdrawal" step="1" placeholder="1000" value="1000">
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="updateWithdrawalLimits()">Update Limits</button>
+
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line);">
+            <div class="setting-row">
+              <div class="setting-info">
+                <h3>Withdrawals Status</h3>
+                <p>Enable or disable user withdrawals globally</p>
+              </div>
+              <div class="setting-controls">
+                <button class="btn btn-success" id="withdrawalStatusBtn" onclick="toggleWithdrawalStatus()">Loading...</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASKS TAB -->
+      <div id="tasks" class="tab-content">
+        <!-- ADD NEW TASK -->
+        <div class="section">
+          <h2>➕ Add New Task</h2>
+          <div id="addTaskMessage"></div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Task ID (slug)</label>
+              <input type="text" id="newTaskId" placeholder="e.g., youtube_subscribe">
+            </div>
+            <div class="form-group">
+              <label>Task Name</label>
+              <input type="text" id="newTaskName" placeholder="e.g., Subscribe to YouTube">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Reward (GRAM)</label>
+              <input type="number" id="newTaskReward" step="0.0001" placeholder="0.001">
+            </div>
+            <div class="form-group">
+              <label>Link Type</label>
+              <select id="newTaskLinkType" style="width: 100%; padding: 10px; background: #07111d; border: 1px solid var(--line); border-radius: 8px; color: white;">
+                <option value="channel">Telegram Channel</option>
+                <option value="group">Telegram Group</option>
+                <option value="url">External URL</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Link/Channel (e.g., @channelname or https://t.me/channel)</label>
+            <input type="text" id="newTaskLink" placeholder="e.g., @gramdrop_channel">
+            <small style="color: var(--muted);">Leave empty for tasks without verification</small>
+          </div>
+
+          <button class="btn btn-success" onclick="addNewTask()">Create Task</button>
+        </div>
+
+        <!-- TASK ANALYTICS & MANAGEMENT -->
+        <div class="section">
+          <h2>📊 Task Analytics & Management</h2>
+          <div id="tasksMessage"></div>
+
+          <div class="task-list" id="tasksList">
+            <div style="text-align: center; padding: 20px; color: var(--muted);">Loading tasks...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div id="users" class="tab-content">
+        <div class="section">
+          <h2>👥 User Management</h2>
+          <div id="usersMessage"></div>
+
+          <div class="form-group">
+            <label>Search User by Telegram ID</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="searchUserId" placeholder="e.g., 123456789">
+              <button class="btn" onclick="searchUser()">Search</button>
+            </div>
+          </div>
+
+          <div id="userResult" style="display: none;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -341,8 +649,10 @@
   <script>
     const API_BASE = 'https://gram-drop.vercel.app/api';
     const ADMIN_PASSWORD = 'gramdrop123'; // Change this!
+    const ADMIN_ID = '7296306496';
 
     let isLoggedIn = false;
+    let adminParams = `?adminId=${ADMIN_ID}&adminPassword=${ADMIN_PASSWORD}`;
 
     function login() {
       const password = document.getElementById('adminPassword').value;
@@ -353,41 +663,59 @@
         loadDashboard();
       } else {
         document.getElementById('loginError').style.display = 'block';
-        document.getElementById('loginError').textContent = '❌ Wrong password!';
+        document.getElementById('loginError').innerHTML = '❌ Incorrect password';
       }
     }
 
     function logout() {
       isLoggedIn = false;
-      document.getElementById('adminPassword').value = '';
       document.getElementById('loginPage').style.display = 'flex';
       document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('adminPassword').value = '';
+    }
+
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+
+      // Load tab-specific data
+      if (tabName === 'tasks') loadTasks();
+      if (tabName === 'settings') loadSettings();
+      if (tabName === 'withdrawals') loadWithdrawals();
+      if (tabName === 'broadcast') loadBroadcasts();
     }
 
     async function loadDashboard() {
-      loadWithdrawals();
-      loadBroadcasts();
-      loadStats();
-    }
-
-    async function loadStats() {
       try {
-        // Placeholder stats
-        document.getElementById('totalUsers').textContent = '0';
-        document.getElementById('totalBalance').textContent = '0';
-        document.getElementById('pendingWithdrawals').textContent = '0';
+        // Load stats
+        const res = await fetch(`${API_BASE}/user?userId=admin`);
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('totalUsers').textContent = '0';
+          document.getElementById('totalBalance').textContent = '0';
+          document.getElementById('pendingWithdrawals').textContent = '0';
+        }
       } catch (error) {
-        console.error('Error loading stats:', error);
+        console.error('Error loading dashboard:', error);
       }
     }
 
     async function sendBroadcast() {
       const title = document.getElementById('broadcastTitle').value;
       const message = document.getElementById('broadcastText').value;
-      const emoji = document.getElementById('broadcastEmoji').value;
+      const emoji = document.getElementById('broadcastEmoji').value || '📢';
 
       if (!title || !message) {
-        alert('Please fill in title and message!');
+        showMessage('broadcastMessage', 'error', 'Title and message required');
         return;
       }
 
@@ -395,120 +723,20 @@
         const res = await fetch(`${API_BASE}/broadcast`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            adminId: '7296306496',
-            title: title,
-            message: message,
-            emoji: emoji
-          })
+          body: JSON.stringify({ title, message, emoji })
         });
 
-        const data = await res.json();
-
         if (res.ok) {
-          document.getElementById('broadcastMessage').innerHTML = '<div class="success">✅ Broadcast sent to all users!</div>';
+          showMessage('broadcastMessage', 'success', '✓ Broadcast sent to all users');
           document.getElementById('broadcastTitle').value = '';
           document.getElementById('broadcastText').value = '';
           document.getElementById('broadcastEmoji').value = '📢';
-          setTimeout(() => {
-            document.getElementById('broadcastMessage').innerHTML = '';
-            loadBroadcasts();
-          }, 2000);
+          loadBroadcasts();
         } else {
-          document.getElementById('broadcastMessage').innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+          showMessage('broadcastMessage', 'error', 'Failed to send broadcast');
         }
       } catch (error) {
-        document.getElementById('broadcastMessage').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
-      }
-    }
-
-    async function loadWithdrawals() {
-      try {
-        const res = await fetch(`${API_BASE}/admin-withdrawals`, {
-          headers: { 'Authorization': `Bearer ${ADMIN_PASSWORD}` }
-        });
-
-        if (!res.ok) throw new Error('Failed to load withdrawals');
-
-        const data = await res.json();
-        const withdrawals = data.withdrawals || [];
-
-        document.getElementById('withdrawalsLoading').style.display = 'none';
-
-        if (withdrawals.length === 0) {
-          document.getElementById('withdrawalsMessage').innerHTML = '<p style="color: var(--muted);">No pending withdrawals</p>';
-          return;
-        }
-
-        let html = '';
-        withdrawals.forEach(w => {
-          html += `
-            <tr>
-              <td>${w.user_id.substring(0, 8)}...</td>
-              <td>${w.amount}</td>
-              <td><code style="font-size: 11px;">${w.ton_wallet_address}</code></td>
-              <td>${new Date(w.created_at).toLocaleDateString()}</td>
-              <td>
-                <button class="btn btn-success" onclick="completeWithdrawal('${w.id}')">Complete</button>
-                <button class="btn btn-danger" onclick="rejectWithdrawal('${w.id}')">Reject</button>
-              </td>
-            </tr>
-          `;
-        });
-
-        document.getElementById('withdrawalsTable').style.display = 'table';
-        document.getElementById('withdrawalsBody').innerHTML = html;
-        document.getElementById('pendingWithdrawals').textContent = withdrawals.length;
-      } catch (error) {
-        document.getElementById('withdrawalsLoading').innerHTML = `<div class="error">Error: ${error.message}</div>`;
-      }
-    }
-
-    async function completeWithdrawal(withdrawalId) {
-      if (!confirm('Mark this withdrawal as completed?')) return;
-
-      try {
-        const res = await fetch(`${API_BASE}/admin-withdrawals?withdrawalId=${withdrawalId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${ADMIN_PASSWORD}`
-          },
-          body: JSON.stringify({ status: 'completed' })
-        });
-
-        if (res.ok) {
-          alert('✅ Withdrawal marked as completed!');
-          loadWithdrawals();
-        } else {
-          alert('❌ Error updating withdrawal');
-        }
-      } catch (error) {
-        alert('Error: ' + error.message);
-      }
-    }
-
-    async function rejectWithdrawal(withdrawalId) {
-      if (!confirm('Reject this withdrawal?')) return;
-
-      try {
-        const res = await fetch(`${API_BASE}/admin-withdrawals?withdrawalId=${withdrawalId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${ADMIN_PASSWORD}`
-          },
-          body: JSON.stringify({ status: 'rejected' })
-        });
-
-        if (res.ok) {
-          alert('✅ Withdrawal rejected!');
-          loadWithdrawals();
-        } else {
-          alert('❌ Error rejecting withdrawal');
-        }
-      } catch (error) {
-        alert('Error: ' + error.message);
+        showMessage('broadcastMessage', 'error', 'Error: ' + error.message);
       }
     }
 
@@ -516,36 +744,517 @@
       try {
         const res = await fetch(`${API_BASE}/get-broadcasts`);
         const data = await res.json();
-        const broadcasts = data.broadcasts || [];
 
-        document.getElementById('broadcastsLoading').style.display = 'none';
-
-        if (broadcasts.length === 0) {
-          document.getElementById('broadcastsTable').style.display = 'none';
-          return;
+        if (data.broadcasts && data.broadcasts.length > 0) {
+          let html = '';
+          data.broadcasts.forEach(bc => {
+            html += `
+              <tr>
+                <td>${bc.emoji}</td>
+                <td>${bc.title}</td>
+                <td>${bc.message}</td>
+                <td>${new Date(bc.created_at).toLocaleString()}</td>
+              </tr>
+            `;
+          });
+          document.getElementById('broadcastsBody').innerHTML = html;
+          document.getElementById('broadcastsTable').style.display = 'table';
+          document.getElementById('broadcastsLoading').style.display = 'none';
         }
-
-        let html = '';
-        broadcasts.forEach(b => {
-          html += `
-            <tr>
-              <td>${b.emoji}</td>
-              <td>${b.title}</td>
-              <td>${b.message.substring(0, 50)}...</td>
-              <td>${new Date(b.created_at).toLocaleDateString()}</td>
-            </tr>
-          `;
-        });
-
-        document.getElementById('broadcastsTable').style.display = 'table';
-        document.getElementById('broadcastsBody').innerHTML = html;
       } catch (error) {
         console.error('Error loading broadcasts:', error);
       }
     }
 
+    async function loadWithdrawals() {
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals`);
+        const data = await res.json();
+
+        if (data.withdrawals && data.withdrawals.length > 0) {
+          let html = '';
+          data.withdrawals.forEach(w => {
+            html += `
+              <tr>
+                <td>${w.user_id}</td>
+                <td>${w.amount}</td>
+                <td><code style="font-size:11px;">${w.ton_wallet_address}</code></td>
+                <td>${new Date(w.created_at).toLocaleString()}</td>
+                <td>
+                  <button class="btn btn-small btn-success" onclick="approveWithdrawal('${w.id}')">Approve</button>
+                  <button class="btn btn-small btn-danger" onclick="rejectWithdrawal('${w.id}')">Reject</button>
+                </td>
+              </tr>
+            `;
+          });
+          document.getElementById('withdrawalsBody').innerHTML = html;
+          document.getElementById('withdrawalsTable').style.display = 'table';
+          document.getElementById('withdrawalsLoading').style.display = 'none';
+        } else {
+          document.getElementById('withdrawalsLoading').innerHTML = '✓ No pending withdrawals';
+        }
+      } catch (error) {
+        console.error('Error loading withdrawals:', error);
+        document.getElementById('withdrawalsLoading').innerHTML = 'Error loading withdrawals';
+      }
+    }
+
+    async function approveWithdrawal(withdrawalId) {
+      if (!confirm('Approve this withdrawal?')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ withdrawal_id: withdrawalId, action: 'approve' })
+        });
+
+        if (res.ok) {
+          alert('✓ Withdrawal approved');
+          loadWithdrawals();
+        } else {
+          alert('Error approving withdrawal');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function rejectWithdrawal(withdrawalId) {
+      if (!confirm('Reject this withdrawal? Balance will be refunded.')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin-withdrawals`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ withdrawal_id: withdrawalId, action: 'reject' })
+        });
+
+        if (res.ok) {
+          alert('✓ Withdrawal rejected and balance refunded');
+          loadWithdrawals();
+        } else {
+          alert('Error rejecting withdrawal');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // SETTINGS FUNCTIONS
+    let currentMiningReward = 0.0001;
+    let currentMinWithdrawal = 0.03;
+    let currentMaxWithdrawal = 1000;
+    let withdrawalEnabled = true;
+    let paymentChannelId = '';
+
+    async function loadSettings() {
+      try {
+        const res = await fetch(`${API_BASE}/admin-settings${adminParams}`);
+        if (res.ok) {
+          const settings = await res.json();
+          currentMiningReward = settings.mining_reward || 0.0001;
+          currentMinWithdrawal = settings.min_withdrawal || 0.03;
+          currentMaxWithdrawal = settings.max_withdrawal || 1000;
+          withdrawalEnabled = settings.withdrawals_enabled !== false;
+          paymentChannelId = settings.payment_channel_id || '';
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        // Use defaults
+      }
+
+      document.getElementById('miningRewardValue').textContent = currentMiningReward.toFixed(6);
+      document.getElementById('minWithdrawal').value = currentMinWithdrawal;
+      document.getElementById('maxWithdrawal').value = currentMaxWithdrawal;
+      document.getElementById('paymentChannelId').value = paymentChannelId;
+      updateWithdrawalStatusBtn();
+    }
+
+    async function increaseMiningReward() {
+      currentMiningReward += 0.00001;
+      await saveSettings();
+      document.getElementById('miningRewardValue').textContent = currentMiningReward.toFixed(6);
+    }
+
+    async function decreaseMiningReward() {
+      if (currentMiningReward > 0.00001) {
+        currentMiningReward -= 0.00001;
+        await saveSettings();
+        document.getElementById('miningRewardValue').textContent = currentMiningReward.toFixed(6);
+      }
+    }
+
+    async function updateWithdrawalLimits() {
+      currentMinWithdrawal = parseFloat(document.getElementById('minWithdrawal').value);
+      currentMaxWithdrawal = parseFloat(document.getElementById('maxWithdrawal').value);
+
+      if (currentMinWithdrawal >= currentMaxWithdrawal) {
+        showMessage('withdrawalMessage', 'error', 'Minimum must be less than maximum');
+        return;
+      }
+
+      await saveSettings();
+      showMessage('withdrawalMessage', 'success', '✓ Withdrawal limits updated');
+    }
+
+    async function toggleWithdrawalStatus() {
+      withdrawalEnabled = !withdrawalEnabled;
+      await saveSettings();
+      updateWithdrawalStatusBtn();
+    }
+
+    function updateWithdrawalStatusBtn() {
+      const btn = document.getElementById('withdrawalStatusBtn');
+      if (withdrawalEnabled) {
+        btn.textContent = '✓ Enabled';
+        btn.classList.remove('btn-danger');
+        btn.classList.add('btn-success');
+      } else {
+        btn.textContent = '✗ Disabled';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-danger');
+      }
+    }
+
+    async function updatePaymentChannel() {
+      paymentChannelId = document.getElementById('paymentChannelId').value.trim();
+
+      if (!paymentChannelId) {
+        showMessage('paymentMessage', 'error', 'Payment channel ID required');
+        return;
+      }
+
+      await saveSettings();
+      showMessage('paymentMessage', 'success', '✓ Payment channel updated');
+    }
+
+    async function saveSettings() {
+      try {
+        const res = await fetch(`${API_BASE}/admin-settings${adminParams}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mining_reward: currentMiningReward,
+            min_withdrawal: currentMinWithdrawal,
+            max_withdrawal: currentMaxWithdrawal,
+            withdrawals_enabled: withdrawalEnabled,
+            payment_channel_id: paymentChannelId
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to save settings');
+        }
+        
+        return await res.json();
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        showMessage('withdrawalMessage', 'error', 'Error saving settings: ' + error.message);
+      }
+    }
+
+    // TASKS FUNCTIONS
+    let tasks = [];
+
+    async function loadTasks() {
+      try {
+        const res = await fetch(`${API_BASE}/tasks-manage${adminParams}`);
+        if (res.ok) {
+          const data = await res.json();
+          tasks = data.tasks || [];
+        }
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+        showMessage('tasksMessage', 'error', 'Error loading tasks');
+      }
+
+      let html = '';
+      if (tasks.length === 0) {
+        html = '<div style="text-align: center; padding: 20px; color: var(--muted);">No tasks created yet</div>';
+      } else {
+        tasks.forEach(task => {
+          const linkDisplay = task.link ? `<p style="margin: 5px 0; color: var(--green); font-size: 12px;">🔗 <code>${task.link}</code></p>` : '';
+          html += `
+            <div class="task-card" style="background: #07111d; border: 1px solid var(--line); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
+                <div style="flex: 1;">
+                  <h3 style="margin: 0 0 5px 0; color: var(--cyan);">${task.name}</h3>
+                  <p style="margin: 0 0 10px 0; color: var(--muted); font-size: 14px;">ID: <code>${task.id}</code></p>
+                  ${linkDisplay}
+                  
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                    <div style="background: #0a1422; padding: 8px; border-radius: 6px; text-align: center;">
+                      <div style="font-size: 18px; font-weight: bold; color: var(--cyan);">${task.total_clicks || 0}</div>
+                      <div style="font-size: 12px; color: var(--muted);">Total Clicks</div>
+                    </div>
+                    <div style="background: #0a1422; padding: 8px; border-radius: 6px; text-align: center;">
+                      <div style="font-size: 18px; font-weight: bold; color: var(--green);">${task.total_claimed || 0}</div>
+                      <div style="font-size: 12px; color: var(--muted);">Claimed</div>
+                    </div>
+                    <div style="background: #0a1422; padding: 8px; border-radius: 6px; text-align: center;">
+                      <div style="font-size: 18px; font-weight: bold; color: var(--cyan);">${(task.total_reward_distributed || 0).toFixed(5)}</div>
+                      <div style="font-size: 12px; color: var(--muted);">GRAM Given</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                  <div style="display: flex; gap: 5px; align-items: center; background: #0a1422; padding: 8px 12px; border-radius: 6px;">
+                    <button class="btn btn-small btn-danger" onclick="decreaseTaskReward('${task.id}')">-</button>
+                    <div style="min-width: 80px; text-align: center; color: var(--cyan); font-weight: bold;">${parseFloat(task.reward).toFixed(5)}</div>
+                    <button class="btn btn-small btn-success" onclick="increaseTaskReward('${task.id}')">+</button>
+                  </div>
+                  <button class="btn btn-small btn-danger" onclick="deleteTask('${task.id}', '${task.name}')">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('tasksList').innerHTML = html;
+    }
+
+    async function addNewTask() {
+      const taskId = document.getElementById('newTaskId').value.trim();
+      const taskName = document.getElementById('newTaskName').value.trim();
+      const reward = parseFloat(document.getElementById('newTaskReward').value);
+      const link = document.getElementById('newTaskLink').value.trim() || null;
+      const linkType = document.getElementById('newTaskLinkType').value;
+
+      if (!taskId || !taskName || !reward || isNaN(reward)) {
+        showMessage('addTaskMessage', 'error', 'All fields required');
+        return;
+      }
+
+      if (reward <= 0 || reward > 100) {
+        showMessage('addTaskMessage', 'error', 'Reward must be between 0 and 100');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/tasks-manage${adminParams}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            taskId: taskId,
+            name: taskName,
+            reward: reward,
+            link: link,
+            linkType: linkType
+          })
+        });
+
+        if (res.ok) {
+          showMessage('addTaskMessage', 'success', '✓ Task created successfully');
+          document.getElementById('newTaskId').value = '';
+          document.getElementById('newTaskName').value = '';
+          document.getElementById('newTaskReward').value = '';
+          document.getElementById('newTaskLink').value = '';
+          document.getElementById('newTaskLinkType').value = 'channel';
+          await loadTasks();
+        } else {
+          const error = await res.json();
+          showMessage('addTaskMessage', 'error', error.error || 'Error creating task');
+        }
+      } catch (error) {
+        showMessage('addTaskMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    async function increaseTaskReward(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.reward = parseFloat(task.reward) + 0.0001;
+        await saveTaskReward(taskId, task.reward);
+        await loadTasks();
+      }
+    }
+
+    async function decreaseTaskReward(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task && parseFloat(task.reward) > 0.0001) {
+        task.reward = parseFloat(task.reward) - 0.0001;
+        await saveTaskReward(taskId, task.reward);
+        await loadTasks();
+      }
+    }
+
+    async function deleteTask(taskId, taskName) {
+      if (!confirm(`Delete task "${taskName}"? This cannot be undone.`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/tasks-manage${adminParams}&taskId=${taskId}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          showMessage('tasksMessage', 'success', `✓ Task "${taskName}" deleted`);
+          await loadTasks();
+        } else {
+          showMessage('tasksMessage', 'error', 'Error deleting task');
+        }
+      } catch (error) {
+        showMessage('tasksMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    async function saveTaskReward(taskId, reward) {
+      try {
+        const res = await fetch(`${API_BASE}/tasks-manage${adminParams}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            taskId: taskId,
+            reward: reward
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to save task reward');
+        }
+      } catch (error) {
+        console.error('Error saving task reward:', error);
+        showMessage('tasksMessage', 'error', 'Error saving reward: ' + error.message);
+      }
+    }
+
+    // USER MANAGEMENT
+    async function searchUser() {
+      const userId = document.getElementById('searchUserId').value;
+      if (!userId) {
+        showMessage('usersMessage', 'error', 'Enter a user ID');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-users${adminParams}&userId=${userId}`);
+        if (res.ok) {
+          const data = await res.json();
+          displayUserCard(data.user, userId);
+        } else {
+          showMessage('usersMessage', 'error', 'User not found');
+        }
+      } catch (error) {
+        showMessage('usersMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    function displayUserCard(user, userId) {
+      const banBtn = user.is_banned 
+        ? `<button class="btn btn-small btn-success" onclick="unbanUser('${userId}')">Unban User</button>`
+        : `<button class="btn btn-small btn-danger" onclick="banUser('${userId}')">Ban User</button>`;
+      
+      const html = `
+        <div class="user-card">
+          <h3>User: ${user.telegram_username || userId}</h3>
+          <div class="user-info">
+            <p><b>Telegram ID:</b> ${user.id}</p>
+            <p><b>Balance:</b> ${user.balance.toFixed(5)} GRAM</p>
+            <p><b>Miner Active:</b> ${user.miner_activated ? '✓ Yes' : '✗ No'}</p>
+            <p><b>Joined:</b> ${new Date(user.created_at).toLocaleDateString()}</p>
+            <p><b>Status:</b> ${user.is_banned ? '<span style="color: var(--red);">🚫 BANNED</span>' : '<span style="color: var(--green);">✓ Active</span>'}</p>
+          </div>
+          <div class="user-actions">
+            <button class="btn btn-small btn-warning" onclick="deductBalance('${userId}')">Deduct Balance</button>
+            ${banBtn}
+          </div>
+        </div>
+      `;
+      document.getElementById('userResult').innerHTML = html;
+      document.getElementById('userResult').style.display = 'block';
+    }
+
+    async function deductBalance(userId) {
+      const amount = prompt('Enter amount to deduct (GRAM):');
+      if (!amount || isNaN(amount) || amount <= 0) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-users${adminParams}&userId=${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'deduct',
+            amount: parseFloat(amount)
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert(`✓ Deducted ${amount} GRAM from user ${userId}`);
+          showMessage('usersMessage', 'success', `Deducted ${amount} GRAM`);
+          displayUserCard(data.user, userId);
+        } else {
+          showMessage('usersMessage', 'error', 'Error deducting balance');
+        }
+      } catch (error) {
+        showMessage('usersMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    async function banUser(userId) {
+      if (!confirm('Ban this user? They will not be able to use the app.')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-users${adminParams}&userId=${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'ban',
+            reason: 'Admin ban'
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert(`✓ User ${userId} has been banned`);
+          showMessage('usersMessage', 'success', `User banned successfully`);
+          displayUserCard(data.user, userId);
+        } else {
+          showMessage('usersMessage', 'error', 'Error banning user');
+        }
+      } catch (error) {
+        showMessage('usersMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    async function unbanUser(userId) {
+      if (!confirm('Unban this user?')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin-users${adminParams}&userId=${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'unban'
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert(`✓ User ${userId} has been unbanned`);
+          showMessage('usersMessage', 'success', `User unbanned successfully`);
+          displayUserCard(data.user, userId);
+        } else {
+          showMessage('usersMessage', 'error', 'Error unbanning user');
+        }
+      } catch (error) {
+        showMessage('usersMessage', 'error', 'Error: ' + error.message);
+      }
+    }
+
+    function showMessage(elementId, type, message) {
+      const element = document.getElementById(elementId);
+      element.className = type;
+      element.innerHTML = message;
+      element.style.display = 'block';
+    }
+
+    // Load tasks on init
     window.addEventListener('load', () => {
-      document.getElementById('adminPassword').focus();
+      if (isLoggedIn) {
+        loadDashboard();
+      }
     });
   </script>
 </body>
