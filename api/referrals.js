@@ -1,4 +1,6 @@
-// api/referrals.js
+// api/referrals.js - Vercel Function
+// Handle referral tracking and milestone rewards
+
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -7,9 +9,9 @@ const supabase = createClient(
 );
 
 const COMMISSION_RATES = {
-  1: 15,
-  2: 5,
-  3: 1
+  1: 15, // Level 1: 15%
+  2: 5,  // Level 2: 5%
+  3: 1   // Level 3: 1%
 };
 
 const MILESTONE_REWARDS = {
@@ -32,6 +34,7 @@ export default async function handler(req, res) {
   // GET REFERRAL STATUS
   if (method === 'GET') {
     try {
+      // Get user's active referrals
       const { data: activeReferrals } = await supabase
         .from('referrals')
         .select('id')
@@ -40,12 +43,14 @@ export default async function handler(req, res) {
 
       const activeCount = activeReferrals ? activeReferrals.length : 0;
 
+      // Get milestone data
       const { data: milestone } = await supabase
         .from('milestones')
         .select('*')
         .eq('user_id', userId)
         .single();
 
+      // Get referral earnings
       const { data: earnings } = await supabase
         .from('referrals')
         .select('earnings')
@@ -73,6 +78,88 @@ export default async function handler(req, res) {
     }
   }
 
+  // CREATE REFERRAL LINK (when user registers via referral)
+  if (method === 'POST') {
+    try {
+      const { referrer_id, referred_id } = req.body;
+
+      if (!referrer_id || !referred_id) {
+        return res.status(400).json({ error: 'Referrer and referred IDs required' });
+      }
+
+      // Check if referral already exists
+      const { data: existing } = await supabase
+        .from('referrals')
+        .select('id')
+        .eq('referrer_id', referrer_id)
+        .eq('referred_id', referred_id)
+        .single();
+
+      if (existing) {
+        return res.status(400).json({ error: 'Referral already exists' });
+      }
+
+      // Determine referral level based on depth
+      const { data: parentReferral } = await supabase
+        .from('referrals')
+        .select('level')
+        .eq('referred_id', referrer_id)
+        .single();
+
+      const level = parentReferral ? Math.min(parentReferral.level + 1, 3) : 1;
+      const commissionRate = COMMISSION_RATES[level];
+
+      // Create referral record
+      const { data: referral, error: createError } = await supabase
+        .from('referrals')
+        .insert({
+          referrer_id: referrer_id,
+          referred_id: referred_id,
+          level: level,
+          commission_rate: commissionRate,
+          is_active: false // Becomes active when referred user activates miner
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        return res.status(500).json({ error: 'Failed to create referral' });
+      }
+
+      // Send notification to referrer
+      try {
+        const notifyRes = await fetch('https://gram-drop.vercel.app/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: referrer_id,
+            type: 'referral',
+            data: {
+              referrerName: 'New User',
+              level: level
+            }
+          })
+        });
+        
+        if (!notifyRes.ok) {
+          console.error('Failed to send referral notification');
+        }
+      } catch (notifyError) {
+        console.error('Notification error:', notifyError);
+      }
+
+      return res.status(200).json({
+        success: true,
+        referral_id: referral.id,
+        level: level,
+        commission_rate: commissionRate
+      });
+    } catch (error) {
+      console.error('Create error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
   // CLAIM MILESTONE REWARD
   if (method === 'PUT') {
     try {
@@ -84,29 +171,34 @@ export default async function handler(req, res) {
 
       const reward = MILESTONE_REWARDS[milestone];
 
+      // Get current milestone data
       const { data: milestoneData } = await supabase
         .from('milestones')
         .select('active_referrals')
         .eq('user_id', userId)
         .single();
 
+      // Check if user has enough referrals
       if (!milestoneData || milestoneData.active_referrals < milestone) {
         return res.status(400).json({
           error: `Need ${milestone} active referrals, have ${milestoneData?.active_referrals || 0}`
         });
       }
 
+      // Check if milestone already claimed
       const fieldName = `level_${milestone}_claimed`;
       if (milestoneData[fieldName]) {
         return res.status(400).json({ error: 'Milestone already claimed' });
       }
 
+      // Update milestone record
       const updateData = { [fieldName]: true };
       await supabase
         .from('milestones')
         .update(updateData)
         .eq('user_id', userId);
 
+      // Add reward to user balance
       const { data: user } = await supabase
         .from('users')
         .select('balance')
@@ -133,4 +225,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
-}
+                              }
