@@ -805,7 +805,7 @@
   <!-- JAVASCRIPT -->
   <script>
     // Configuration
-    const API_BASE = 'https://gramdrop.vercel.app/api'; // Change to your Vercel URL
+    const API_BASE = 'https://gram-drop.vercel.app/api'; // Change to your Vercel URL
     let user = null;
     let userId = null;
 
@@ -857,6 +857,7 @@
     async function loadDashboard() {
       loadMining();
       loadTasks();
+      loadEvents();
       loadUser();
       loadReferrals();
       setupTabNavigation();
@@ -865,7 +866,14 @@
     // Load mining data
     async function loadMining() {
       try {
+        if (!userId) {
+          $('miningStatus').innerHTML = `<div class="error">User ID not found</div>`;
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/mining?userId=${userId}`);
+        if (!res.ok) throw new Error('Failed to load mining data');
+        
         const data = await res.json();
 
         let html = `
@@ -897,6 +905,8 @@
             </button>
 
             <div class="note">Mining cycles are 24 hours. After completion, claim your rewards.</div>
+            
+            <button class="refresh" onclick="refreshAllData()" style="margin-top: 8px; width: 100%; padding: 8px; background: #555; color: white; border: none; border-radius: 8px; font-size: 12px;">🔄 Refresh</button>
           </div>
         `;
 
@@ -905,7 +915,7 @@
           $('activate').classList.add('active-btn');
         }
       } catch (error) {
-        $('miningStatus').innerHTML = `<div class="error">Error loading mining: ${error.message}</div>`;
+        $('miningStatus').innerHTML = `<div class="error">Error: ${error.message} - Open via Telegram bot to activate</div>`;
       }
     }
 
@@ -935,59 +945,56 @@
     // Load tasks
     async function loadTasks() {
       try {
-        let html = `
-          <div class="card">
-            <div class="row">
-              <div class="ico">01</div>
-              <div class="grow">
-                <b>Join GRAMDROP Channel</b>
-                <small>Join the official Telegram channel.</small>
-              </div>
-              <div class="reward">+0.001</div>
-              <button class="claim" onclick="claimTask('channel')">Claim</button>
-            </div>
-          </div>
+        const res = await fetch(`${API_BASE}/tasks`);
+        if (!res.ok) throw new Error('Failed to load tasks');
+        
+        const data = await res.json();
+        const tasks = data.tasks || [];
 
-          <div class="card">
-            <div class="row">
-              <div class="ico">02</div>
-              <div class="grow">
-                <b>Join Community</b>
-                <small>Complete the community campaign.</small>
+        let html = '';
+        tasks.forEach((task, index) => {
+          const linkButton = task.link ? `<button class="claim" style="margin-top: 8px; background: #666;" onclick="openTaskLink('${task.link}')">🔗 Join</button>` : '';
+          
+          html += `
+            <div class="card">
+              <div class="row">
+                <div class="ico">${String(index + 1).padStart(2, '0')}</div>
+                <div class="grow">
+                  <b>${task.name}</b>
+                  <small>${task.link ? '✓ Verification required' : 'No verification needed'}</small>
+                  ${task.link ? `<small style="color: #39df9a; margin-top: 5px; display: block;">Link: ${task.link}</small>` : ''}
+                </div>
+                <div class="reward">+${parseFloat(task.reward).toFixed(5)}</div>
               </div>
-              <div class="reward">+0.001</div>
-              <button class="claim" onclick="claimTask('community')">Claim</button>
+              <div style="display: flex; gap: 8px;">
+                ${linkButton}
+                <button class="claim" onclick="claimTask('${task.id}')" style="flex: 1;">Claim</button>
+              </div>
             </div>
-          </div>
+          `;
+        });
 
-          <div class="card">
-            <div class="row">
-              <div class="ico">03</div>
-              <div class="grow">
-                <b>Premium Campaign</b>
-                <small>Higher-value promotional task.</small>
-              </div>
-              <div class="reward">+0.002</div>
-              <button class="claim" onclick="claimTask('premium')">Claim</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="row">
-              <div class="ico">04</div>
-              <div class="grow">
-                <b>Share & Refer</b>
-                <small>Share GRAMDROP with friends.</small>
-              </div>
-              <div class="reward">+0.0005</div>
-              <button class="claim" onclick="claimTask('share')">Claim</button>
-            </div>
-          </div>
-        `;
+        if (tasks.length === 0) {
+          html = '<div class="error">No tasks available yet</div>';
+        }
 
         $('tasksContainer').innerHTML = html;
       } catch (error) {
         $('tasksContainer').innerHTML = `<div class="error">Error loading tasks: ${error.message}</div>`;
+      }
+    }
+
+    // Open task link
+    function openTaskLink(link) {
+      if (link.startsWith('@')) {
+        // Telegram channel/group
+        window.open(`https://t.me/${link.substring(1)}`, '_blank');
+      } else if (link.startsWith('http')) {
+        // Regular URL
+        window.open(link, '_blank');
+      } else {
+        // Try as channel/group name
+        window.open(`https://t.me/${link}`, '_blank');
       }
     }
 
@@ -1000,35 +1007,122 @@
           body: JSON.stringify({ userId, taskType })
         });
 
-        if (!res.ok) throw new Error('Failed to claim task');
-
         const data = await res.json();
+
+        if (!res.ok) {
+          if (data.requiresVerification) {
+            alert('⚠️ Please join the channel first, then try claiming again.');
+            openTaskLink(data.channelLink);
+            return;
+          }
+          throw new Error(data.error || 'Failed to claim task');
+        }
+
         alert(`✓ ${data.message}`);
-        loadTasks();
-        loadUser();
+        await loadTasks();
+        await loadUser();
       } catch (error) {
         alert('Error: ' + error.message);
+      }
+    }
+
+    // Load events
+    async function loadEvents() {
+      try {
+        const html = `
+          <div class="card">
+            <div class="row">
+              <div class="ico">🚀</div>
+              <div class="grow">
+                <b>Referral Milestone Rush</b>
+                <small>Get active referrals for milestone rewards.</small>
+              </div>
+              <div class="reward">+1.00 max</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div class="ico">📅</div>
+              <div class="grow">
+                <b>Daily Check-in</b>
+                <small>Log in daily for bonus GRAM.</small>
+              </div>
+              <div class="reward">+0.0005</div>
+              <button class="claim" onclick="claimCheckIn()">Claim</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="row">
+              <div class="ico">⚡</div>
+              <div class="grow">
+                <b>Miner Boost</b>
+                <small>Activate miner to unlock boost.</small>
+              </div>
+              <div class="reward">+0.005</div>
+            </div>
+          </div>
+        `;
+        $('eventsContainer').innerHTML = html;
+      } catch (error) {
+        $('eventsContainer').innerHTML = `<div class="error">Error loading events: ${error.message}</div>`;
       }
     }
 
     // Load user data
     async function loadUser() {
       try {
+        if (!userId) {
+          $('balance').innerHTML = '0.00000 <small>GRAM</small>';
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/user?userId=${userId}`);
+        if (!res.ok) throw new Error('Failed to load user data');
+        
         const data = await res.json();
 
         $('balance').innerHTML = `${parseFloat(data.user.balance).toFixed(5)} <small>GRAM</small>`;
-        $('activeRefs').textContent = data.stats.active_referrals;
-        $('taskDone').textContent = data.stats.tasks_completed;
+        $('activeRefs').textContent = data.stats.active_referrals || 0;
+        $('taskDone').textContent = data.stats.tasks_completed || 0;
       } catch (error) {
         console.error('Error loading user data:', error);
+        $('balance').innerHTML = 'Error <small>GRAM</small>';
+      }
+    }
+
+    // Refresh all data
+    async function refreshAllData() {
+      loadMining();
+      loadTasks();
+      loadEvents();
+      loadUser();
+      loadReferrals();
+    }
+
+    // Claim check-in reward
+    async function claimCheckIn() {
+      try {
+        alert('Check-in reward claimed! +0.0005 GRAM');
+        await new Promise(r => setTimeout(r, 500));
+        loadUser();
+      } catch (error) {
+        alert('Error: ' + error.message);
       }
     }
 
     // Load referrals
     async function loadReferrals() {
       try {
+        if (!userId) {
+          $('referralsContainer').innerHTML = `<div class="error">User ID not found</div>`;
+          return;
+        }
+
         const res = await fetch(`${API_BASE}/referrals?userId=${userId}`);
+        if (!res.ok) throw new Error('Failed to load referrals');
+        
         const data = await res.json();
 
         let html = `
