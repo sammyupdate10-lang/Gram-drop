@@ -860,10 +860,10 @@
       loadEvents();
       loadUser();
       loadReferrals();
+      loadWithdraw();
       setupTabNavigation();
     }
 
-    // Load mining data
     async function loadMining() {
       try {
         if (!userId) {
@@ -872,9 +872,16 @@
         }
 
         const res = await fetch(`${API_BASE}/mining?userId=${userId}`);
-        if (!res.ok) throw new Error('Failed to load mining data');
-        
         const data = await res.json();
+
+        if (!data.success && !res.ok) {
+          throw new Error(data.error || 'Failed to load mining data');
+        }
+
+        const miningActive = data.mining_active || false;
+        const earned = parseFloat(data.earned) || 0;
+        const progress = parseInt(data.progress) || 0;
+        const timerRemaining = data.timer_remaining || 0;
 
         let html = `
           <div class="mine">
@@ -891,17 +898,17 @@
             </div>
 
             <div class="mine-number" id="mineAmount">
-              ${(parseFloat(data.earned) || 0).toFixed(5)} <span>GRAM</span>
+              ${earned.toFixed(6)} <span>GRAM</span>
             </div>
 
-            <div class="timer" id="timer">${data.mining_active ? `${data.timer_remaining ? Math.floor(data.timer_remaining/3600000) + 'h remaining' : 'Cycle complete!'}` : 'Miner not activated'}</div>
+            <div class="timer" id="timer">${miningActive ? `${Math.floor(timerRemaining/3600000)}h remaining` : 'Miner not activated'}</div>
 
             <div class="progress">
-              <i id="mineProgress" style="width: ${data.progress || 0}%"></i>
+              <i id="mineProgress" style="width: ${progress}%"></i>
             </div>
 
-            <button class="activate" id="activate" onclick="activateMiner()" ${data.mining_active ? 'disabled' : ''}>
-              ${data.mining_active ? 'Miner Active' : 'Activate Miner'}
+            <button class="activate" id="activate" onclick="activateMiner()" ${miningActive ? 'disabled' : ''}>
+              ${miningActive ? 'Miner Active' : 'Activate Miner'}
             </button>
 
             <div class="note">Mining cycles are 24 hours. After completion, claim your rewards.</div>
@@ -911,11 +918,35 @@
         `;
 
         $('miningStatus').innerHTML = html;
-        if (data.mining_active) {
+        if (miningActive) {
           $('activate').classList.add('active-btn');
         }
       } catch (error) {
-        $('miningStatus').innerHTML = `<div class="error">Error: ${error.message} - Open via Telegram bot to activate</div>`;
+        console.error('Mining error:', error);
+        $('miningStatus').innerHTML = `<div class="error">⚠️ ${error.message}</div>`;
+      }
+    }
+
+    // Activate miner
+    async function activateMiner() {
+      try {
+        const res = await fetch(`${API_BASE}/mining?userId=${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('❌ Error: ' + (data.error || 'Failed to activate miner'));
+          return;
+        }
+
+        alert('✅ Miner activated! Mining for 24 hours.');
+        await loadMining();
+        await loadUser();
+      } catch (error) {
+        alert('Error: ' + error.message);
       }
     }
 
@@ -1099,6 +1130,7 @@
       loadEvents();
       loadUser();
       loadReferrals();
+      loadWithdraw();
     }
 
     // Claim check-in reward
@@ -1197,6 +1229,105 @@
       }
     }
 
+    async function loadWithdraw() {
+      try {
+        if (!userId) {
+          $('withdrawContainer').innerHTML = `<div class="error">User ID not found</div>`;
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/withdraw?userId=${userId}`);
+        const data = await res.json();
+
+        if (!data.success && !res.ok) {
+          throw new Error(data.error || 'Failed to load withdrawal data');
+        }
+
+        const balance = parseFloat(data.balance) || 0;
+        const minWithdrawal = data.min_withdrawal || 0.03;
+
+        let html = `
+          <div class="card">
+            <div class="row">
+              <div class="ico">💰</div>
+              <div class="grow">
+                <b>Available Balance</b>
+                <small>Ready to withdraw</small>
+              </div>
+              <div class="reward">${balance.toFixed(5)} GRAM</div>
+            </div>
+          </div>
+
+          <div class="section-head" style="margin-top: 16px;">
+            <h2>Withdrawal Request</h2>
+          </div>
+
+          <div class="form-group">
+            <label>Amount (TON)</label>
+            <input type="number" id="withdrawAmount" placeholder="e.g., 0.5" step="0.01" min="${minWithdrawal}">
+            <small>Minimum: ${minWithdrawal} TON | Maximum: 1000 TON</small>
+          </div>
+
+          <div class="form-group">
+            <label>TON Wallet Address</label>
+            <input type="text" id="tonWallet" placeholder="e.g., EQDx...">
+          </div>
+
+          <button class="claim" style="width: 100%; margin-top: 16px;" onclick="requestWithdrawal()">Request Withdrawal</button>
+
+          <div class="note" style="margin-top: 16px;">
+            ⚠️ Withdrawals are manual. Our team will process your request within 24 hours.
+          </div>
+        `;
+
+        $('withdrawContainer').innerHTML = html;
+      } catch (error) {
+        console.error('Withdraw error:', error);
+        $('withdrawContainer').innerHTML = `<div class="error">⚠️ ${error.message}</div>`;
+      }
+    }
+
+    async function requestWithdrawal() {
+      const amount = document.getElementById('withdrawAmount').value;
+      const wallet = document.getElementById('tonWallet').value;
+
+      if (!amount || !wallet) {
+        alert('❌ Please fill in all fields');
+        return;
+      }
+
+      if (parseFloat(amount) < 0.03) {
+        alert('❌ Minimum withdrawal is 0.03 TON');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/withdraw?userId=${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(amount),
+            ton_wallet_address: wallet
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('❌ Error: ' + (data.error || 'Failed to create withdrawal'));
+          return;
+        }
+
+        alert('✅ Withdrawal request created! Our team will review it within 24 hours.');
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('tonWallet').value = '';
+        await loadWithdraw();
+        await loadUser();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
     function copyRefLink() {
       const link = $('refLink').value;
       navigator.clipboard.writeText(link);
@@ -1227,6 +1358,7 @@
       loadMining();
       loadTasks();
       loadReferrals();
+      loadWithdraw();
       setupTabNavigation();
     }
 
